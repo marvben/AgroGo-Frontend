@@ -36,21 +36,21 @@ export default function HomePage() {
   //     });
   // }, []);
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: '#0f172a',
-        }}
-      >
-        <CircularProgress sx={{ color: '#38bdf8' }} />
-      </Box>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         minHeight: '100vh',
+  //         display: 'flex',
+  //         alignItems: 'center',
+  //         justifyContent: 'center',
+  //         bgcolor: '#0f172a',
+  //       }}
+  //     >
+  //       <CircularProgress sx={{ color: '#38bdf8' }} />
+  //     </Box>
+  //   );
+  // }
 
   /////////////////////
 
