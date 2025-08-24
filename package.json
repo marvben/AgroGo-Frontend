@@ -2,7 +2,7 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
-  "proxy": "https://agrogo-backend.onrender.com",
+  "proxy": "https://agrogo-backend.onrender.com/",
   "type": "module",
   "scripts": {
     "dev": "vite",

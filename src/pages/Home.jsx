@@ -106,7 +106,7 @@ export default function HomePage() {
 
       {/* Products Grid */}
 
-      <ProductsList title='Latest Products' description='' />
+      <ProductsList title='Latest Products' />
     </Box>
   );
 }

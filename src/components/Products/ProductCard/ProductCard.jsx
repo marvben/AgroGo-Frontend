@@ -11,8 +11,6 @@ const ProductCard = ({ product }) => {
     <Card
       sx={{
         maxWidth: 400,
-        borderRadius: 3,
-        boxShadow: 3,
         bgcolor: '#1e293b',
         color: 'white',
         borderRadius: 3,

@@ -1,12 +1,11 @@
 import ProductCard from './ProductCard/ProductCard';
 import { Box, Container, Typography } from '@mui/material';
 import dummyProducts from '../../data/products'; // Assuming you have a products data file
-import { Description } from '@mui/icons-material';
 
 const ProductsList = ({
   products = dummyProducts,
-  title = 'title',
-  description = ' description',
+  title = 'Title Here',
+  description = 'Description Here',
 }) => {
   if (!products || products.length === 0) {
     return (
