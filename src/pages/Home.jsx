@@ -18,23 +18,23 @@ import { Link } from 'react-router-dom';
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    fetch('http://localhost:5000/api/products', { credentials: 'include' })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch products');
-        return res.json();
-      })
-      .then((data) => {
-        setProducts(data.data || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch('http://localhost:5000/api/products', { credentials: 'include' })
+  //     .then((res) => {
+  //       if (!res.ok) throw new Error('Failed to fetch products');
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       setProducts(data.data || []);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setError(err.message);
+  //       setLoading(false);
+  //     });
+  // }, []);
 
   if (loading) {
     return (
@@ -48,24 +48,6 @@ export default function HomePage() {
         }}
       >
         <CircularProgress sx={{ color: '#38bdf8' }} />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: '#0f172a',
-        }}
-      >
-        <Alert severity='error' variant='filled'>
-          {error}
-        </Alert>
       </Box>
     );
   }
