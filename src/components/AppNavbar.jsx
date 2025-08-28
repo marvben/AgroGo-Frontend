@@ -20,11 +20,13 @@ import LoginLink from './LoginLink';
 import RegisterLink from './RegisterLink';
 
 export default function AppNavbar() {
-  const { user, userUrl } = useAuth(); // { id, username, role } or null
+  const { user, userUrl, showHeader } = useAuth(); // { id, username, role } or null
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
+
+  if (!showHeader) return '';
 
   return (
     <AppBar

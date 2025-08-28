@@ -1,43 +1,24 @@
 import AuthForm from '../components/AuthForm';
 import { useAuth } from '../context/useAuth';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Box, Snackbar, Alert } from '@mui/material';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 export default function LoginPage() {
   const { login, user, userUrl } = useAuth();
   const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
+  const navigate = useNavigate();
 
   // If already logged in, redirect away
-  useEffect(() => {
-    if (user) {
-      window.location.href = userUrl;
-    }
-  }, [user, userUrl]);
+
+  if (user) return <Navigate to='/dashboard' replace />;
 
   const handleLogin = async (data) => {
-    try {
-      setLoading(true);
+    setLoading(true);
 
-      const ok = await login(data); // expect login() returns user
-      if (ok) {
-        window.location.href = '/verify';
-      } else {
-        setSnack({
-          open: true,
-          type: 'error',
-          msg: 'Invalid credentials, please try again.',
-        });
-      }
-    } catch (err) {
-      setSnack({
-        open: true,
-        type: 'error',
-        msg: err?.message || 'Login failed. Please try again.',
-      });
-    } finally {
-      setLoading(false);
-    }
+    const ok = await login(data); // expect login() returns user
+    if (ok) navigate(userUrl);
+    setLoading(false);
   };
 
   return (

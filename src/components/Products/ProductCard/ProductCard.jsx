@@ -37,6 +37,7 @@ const ProductCard = ({ product }) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          marginTop: 'auto',
         }}
       >
         <QuantitySelector />

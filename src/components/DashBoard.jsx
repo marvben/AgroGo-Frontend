@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -23,11 +24,15 @@ import {
 
 const drawerWidth = 240;
 
+import ImageUpload from '../components/CloudinaryUploadImage';
+
 export default function DashboardBuyer({ user }) {
+  if (!user.isVerified) return <Navigate to='/verify' replace />;
+
   return (
     <Box sx={{ display: 'flex' }}>
       {/* Sidebar */}
-      {/* <Drawer
+      <Drawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -68,7 +73,7 @@ export default function DashboardBuyer({ user }) {
             <ListItemText primary='Logout' />
           </ListItem>
         </List>
-      </Drawer> */}
+      </Drawer>
 
       {/* Main Content */}
       <Box component='main' sx={{ flexGrow: 1, p: 3, minHeight: '100%' }}>
@@ -87,7 +92,9 @@ export default function DashboardBuyer({ user }) {
             </Typography>
             <Avatar
               alt={user?.name}
-              src={user?.profileImage || 'https://i.pravatar.cc/40'}
+              src={
+                user?.profileImageUrl?.secure_url || 'https://i.pravatar.cc/40'
+              }
             />
           </Toolbar>
         </AppBar>
@@ -142,7 +149,10 @@ export default function DashboardBuyer({ user }) {
           {/* Quick Actions */}
           <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
             <CardContent>
-              <Typography variant='h6'>Quick Actions</Typography>
+              <Typography variant='h5' textAlign='center'>
+                Quick Actions
+              </Typography>
+              <ImageUpload />
               <Button variant='contained' fullWidth sx={{ mt: 2 }}>
                 Update Profile
               </Button>

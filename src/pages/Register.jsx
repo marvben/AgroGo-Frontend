@@ -1,13 +1,51 @@
+import { useNavigate, Navigate } from 'react-router-dom';
+
 import AuthForm from '../components/AuthForm';
 import { useAuth } from '../context/useAuth';
 import { useState } from 'react';
 import { Box, Snackbar, Alert } from '@mui/material';
 
 export default function RegisterPage() {
-  const { register: registerUser, userType } = useAuth();
+  const { register, user } = useAuth();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
+
+  // const handleRegister = async (data) => {
+  //   if (data.password !== data.confirmPassword) {
+  //     setSnack({
+  //       open: true,
+  //       type: 'error',
+  //       msg: 'Passwords do not match',
+  //     });
+  //     return;
+  //   }
+  //   try {
+  //     setLoading(true);
+  //     const registeredUser = await register(data);
+  //     if (registeredUser) {
+  //       await uploadImageToCloudinary(data);
+  //       window.location.href = '/verify'; // Redirect to verification page
+  //     } else {
+  //       setSnack({
+  //         open: true,
+  //         type: 'error',
+  //         msg: 'Registration failed',
+  //       });
+  //     }
+  //   } catch (err) {
+  //     setSnack({
+  //       open: true,
+  //       type: 'error',
+  //       msg: err?.message || 'Registration failed',
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  if (user) return <Navigate to='/dashboard' replace />;
 
   const handleRegister = async (data) => {
     if (data.password !== data.confirmPassword) {
@@ -18,27 +56,11 @@ export default function RegisterPage() {
       });
       return;
     }
-    try {
-      setLoading(true);
-      const registeredUser = await registerUser(data, userType);
-      if (registeredUser) {
-        window.location.href = '/verify'; // Redirect to verification page
-      } else {
-        setSnack({
-          open: true,
-          type: 'error',
-          msg: 'Registration failed',
-        });
-      }
-    } catch (err) {
-      setSnack({
-        open: true,
-        type: 'error',
-        msg: err?.message || 'Registration failed',
-      });
-    } finally {
-      setLoading(false);
-    }
+
+    setLoading(true);
+    const registeredUser = await register(data);
+    if (registeredUser) navigate('/verify'); // Redirect to verification page
+    setLoading(false);
   };
 
   return (

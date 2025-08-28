@@ -1,40 +1,36 @@
 // src/pages/HomePage.jsx
+import { useAuth } from '../context/AuthContext';
+
 import { useEffect, useState } from 'react';
 import ProductsList from '../components/Products/ProductsList';
+//import UploadImageToCloudinary from '../components/UploadImageToCloudinary';
+import API from '../api/axios';
 
-import {
-  Box,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Button,
-  CircularProgress,
-  Alert,
-} from '@mui/material';
+import { Box, Typography, CircularProgress, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 export default function HomePage() {
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const { setShowHeader } = useAuth();
 
-  // useEffect(() => {
-  //   fetch('http://localhost:5000/api/products', { credentials: 'include' })
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error('Failed to fetch products');
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       setProducts(data.data || []);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       setError(err.message);
-  //       setLoading(false);
-  //     });
-  // }, []);
+  useEffect(() => setShowHeader(false), []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await API.get('/api/products');
+        setProducts(res.data || []);
+        // setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        // setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // if (loading) {
   //   return (
@@ -88,7 +84,11 @@ export default function HomePage() {
 
       {/* Products Grid */}
 
-      <ProductsList title='Latest Products' />
+      {products ? (
+        <ProductsList title='Latest Products' />
+      ) : (
+        <ProductsList title='Latest Products' products={products} />
+      )}
     </Box>
   );
 }

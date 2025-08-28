@@ -1,6 +1,6 @@
 // src/pages/VerifyCode.jsx
 import React, { useState } from 'react';
-import { Link as RouterLink, Navigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -34,6 +34,8 @@ export default function VerifyCode() {
     defaultValues: { code: '' },
   });
 
+  const navigate = useNavigate();
+
   const onSubmit = async ({ code }) => {
     if (code.trim() === user.verificationCode || !user.isVerified) {
       setPageTitle('Verifying Code...');
@@ -46,9 +48,11 @@ export default function VerifyCode() {
           }
         );
         if (res.data) {
-          setSnack({ open: true, type: 'success', msg: 'Code verified.' });
-          // window.location.href = `/${user.role}`; // Redirect to dashboard
+          setSnack({ open: true, type: 'success', msg: 'Account verified.' });
+
           setPageTitle('Account Verified');
+
+          navigate(userUrl);
           reset();
         } else {
           setPageTitle('Re-enter your code');
@@ -88,7 +92,6 @@ export default function VerifyCode() {
       // Check for expected success flag or code field
       if (res.data?.verificationCode) {
         await resetExpireTime(); // Reset the expiration time
-        console.log(expireTime);
         setPageTitle('Code Sent');
         setSnack({
           open: true,

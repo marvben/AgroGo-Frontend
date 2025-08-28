@@ -3,21 +3,22 @@ import Cookies from 'js-cookie';
 import API from '../api/axios';
 import { AuthContext } from './AuthContext';
 import { Box, Snackbar, Alert } from '@mui/material';
-
-const tokenInCookie = Cookies.get('token');
+import { useForm } from 'react-hook-form';
 
 export const AuthProvider = ({ children }) => {
-  const [userToken, setUserToken] = useState(tokenInCookie || null);
+  const [showHeader, setShowHeader] = useState(true);
+  const [userToken, setUserToken] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // For initial auth check
   const [userType, setUserType] = useState('buyer'); // Default user type
-  const [userUrl, setUserUrl] = useState(null);
+  const [userUrl, setUserUrl] = useState('/dashboard');
   const [expireTime, setExpireTime] = useState(null); // Optional: to track code expiration
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [requiredRole, setRequiredRole] = useState(false);
   const [userHasRole, setUserHasRole] = useState(false);
-
+  const [profileImage, setProfileImage] = useState(null);
+  const { reset } = useForm();
   // Check if user is logged in on first load
   useEffect(() => {
     const fetchUser = async () => {
@@ -27,15 +28,12 @@ export const AuthProvider = ({ children }) => {
         }); // Backend should return { user }
         if (!res.data) {
           setUser(null);
-
           return;
         }
         setUser(res.data);
-        setUserUrl(`/${userType}s/${res.data._id}`);
       } catch (err) {
         setUser(null);
         setIsAuthenticated(false);
-        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -44,12 +42,16 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, [userType]);
 
+  useEffect(() => {
+    const token = Cookies.get('token'); // read token from cookies
+    if (token) {
+      setUserToken(token);
+    }
+  }, []); // runs once when app loads
+
   // function to check and update expire time
   const resetExpireTime = async () => {
-    let intervalID = null;
     if (user && user.verificationCodeExpires) {
-      // set up interval to check every 1 second
-      intervalID = setInterval(resetExpireTime, 1000);
       const expiresAt = new Date(user.verificationCodeExpires);
       const now = new Date();
       const timeRemaining = expiresAt.getTime() - now.getTime(); // milliseconds left
@@ -60,7 +62,71 @@ export const AuthProvider = ({ children }) => {
       setExpireTime(`Time remaining: ${minutes}m ${seconds}s`);
     } else {
       setExpireTime(null);
-      clearInterval(intervalID); // Clear interval if no expiration time
+    }
+  };
+
+  // Register function
+  const register = async (data) => {
+    try {
+      const res = await API.post(`/api/${userType}s/register`, data, {
+        withCredentials: true,
+      });
+      if (res.data) {
+        const newUser = res.data.user;
+        const newToken = newUser.tokens[0].token;
+        setUser(newUser);
+
+        setSnack({
+          open: true,
+          type: 'success',
+          msg: `Welcome ${newUser.name}, Registration successful!`,
+        });
+
+        // Set the token in cookies
+        setUserToken(newToken);
+
+        return true;
+      }
+      return false;
+    } catch (error) {
+      setSnack({
+        open: true,
+        type: 'error',
+        msg:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Registration failed',
+      });
+      console.log(error);
+      return false;
+    }
+  };
+
+  const uploadImageToCloudinary = async (data, method) => {
+    const formData = new FormData();
+    formData.append('profileImage', data.image[0]); // matches multer field name
+
+    try {
+      const res = await API[method](
+        `/api/${user.role}s/profileImage`,
+        formData
+      );
+
+      setProfileImage(res.data);
+      setSnack({
+        open: true,
+        type: 'success',
+        msg: method === 'post' ? 'Upload successful' : 'Update successful',
+      });
+      reset();
+    } catch (err) {
+      setSnack({
+        open: true,
+        type: 'error',
+        msg:
+          err.response?.data?.error ||
+          'Something went wrong, image not uploaded',
+      });
     }
   };
 
@@ -73,42 +139,23 @@ export const AuthProvider = ({ children }) => {
 
       if (res.data) {
         // Set the token in cookies
-        if (!userToken) setUserToken(tokenInCookie);
+        setUserToken(res.data.token);
         setUser(res.data.user);
+        setSnack({
+          open: true,
+          type: 'success',
+          msg: 'Login Successful',
+        });
         return true;
       }
       return false;
     } catch (err) {
-      console.error(err);
-      return false;
-    }
-  };
-
-  // Register function
-  const register = async (data) => {
-    try {
-      const res = await API.post(`/api/${userType}s/register`, data, {
-        withCredentials: true,
-      });
-      if (res.data) {
-        setUser(res.data.user);
-        setExpireTime(user.verificationCodeExpires); // Optional: set expiration time if provided
-        console.log('User registered:', res.data);
-        console.log('Registration successful');
-
-        // Set the token in cookies
-        if (!userToken) setUserToken(tokenInCookie);
-
-        return true;
-      }
-      return false;
-    } catch (error) {
       setSnack({
         open: true,
         type: 'error',
-        msg: error?.response?.data?.message || 'Registration failed',
+        msg:
+          err?.response?.data?.message || err.message || 'Something went wrong',
       });
-      console.error(error);
       return false;
     }
   };
@@ -157,6 +204,7 @@ export const AuthProvider = ({ children }) => {
         user,
         login,
         register,
+        uploadImageToCloudinary,
         logout,
         deleteUser,
         loading,
@@ -175,6 +223,8 @@ export const AuthProvider = ({ children }) => {
         setRequiredRole,
         userHasRole,
         setUserHasRole,
+        showHeader,
+        setShowHeader,
       }}
     >
       {children}
