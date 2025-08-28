@@ -1,6 +1,6 @@
 import AuthForm from '../components/AuthForm';
 import { useAuth } from '../context/useAuth';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Snackbar, Alert } from '@mui/material';
 import { Navigate, useNavigate } from 'react-router-dom';
 export default function LoginPage() {
@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   // If already logged in, redirect away
 
-  if (user) return <Navigate to='/dashboard' replace />;
+  if (user) return <Navigate to={userUrl} replace />;
 
   const handleLogin = async (data) => {
     setLoading(true);

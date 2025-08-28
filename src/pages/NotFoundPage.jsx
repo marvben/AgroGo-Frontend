@@ -1,8 +1,21 @@
+import { useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-const NotFoundPage = () => {
-  const navigate = useNavigate();
+import { useAuth } from '../context/useAuth';
 
+const NotFoundPage = () => {
+  const { setShowHeader, setShowFooter } = useAuth();
+
+  useEffect(() => {
+    setShowHeader(false);
+    setShowFooter(false);
+    return () => {
+      setShowHeader(true);
+      setShowFooter(true);
+    };
+  }, [setShowHeader, setShowFooter]);
+
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -12,13 +25,13 @@ const NotFoundPage = () => {
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        p: 2,
+        p: 0,
       }}
     >
       <Typography variant='h1' sx={{ fontSize: '6rem', fontWeight: 'bold' }}>
         404
       </Typography>
-      <Typography variant='h5' sx={{ mb: 2 }}>
+      <Typography variant='h5' sx={{ mb: 2, px: 2, py: 0 }}>
         Oops! The page you’re looking for doesn’t exist.
       </Typography>
       <Button variant='contained' color='primary' onClick={() => navigate('/')}>

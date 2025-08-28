@@ -21,7 +21,13 @@ export default function ImageUpload() {
     try {
       const res = await API[method](
         `/api/${user.role}s/profileImage`,
-        formData
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data', // let Axios generate boundary
+          },
+        }
       );
 
       setProfileImage(res.data);
@@ -32,6 +38,7 @@ export default function ImageUpload() {
       });
       reset();
     } catch (err) {
+      console.log(err);
       setSnack({
         open: true,
         type: 'error',
@@ -144,7 +151,7 @@ export default function ImageUpload() {
           </Box>
         </form>
       </CardContent>
-      {/* <Snackbar
+      <Snackbar
         open={snack.open}
         autoHideDuration={4000}
         onClose={() => setSnack((s) => ({ ...s, open: false }))}
@@ -158,7 +165,7 @@ export default function ImageUpload() {
         >
           {snack.msg}
         </Alert>
-      </Snackbar> */}
+      </Snackbar>
     </Card>
   );
 }

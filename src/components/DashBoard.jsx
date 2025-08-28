@@ -32,7 +32,7 @@ export default function DashboardBuyer({ user }) {
   return (
     <Box sx={{ display: 'flex' }}>
       {/* Sidebar */}
-      <Drawer
+      {/* <Drawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -73,7 +73,7 @@ export default function DashboardBuyer({ user }) {
             <ListItemText primary='Logout' />
           </ListItem>
         </List>
-      </Drawer>
+      </Drawer> */}
 
       {/* Main Content */}
       <Box component='main' sx={{ flexGrow: 1, p: 3, minHeight: '100%' }}>

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 
 export const AuthProvider = ({ children }) => {
   const [showHeader, setShowHeader] = useState(true);
+  const [showFooter, setShowFooter] = useState(true);
   const [userToken, setUserToken] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // For initial auth check
@@ -19,6 +20,17 @@ export const AuthProvider = ({ children }) => {
   const [userHasRole, setUserHasRole] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const { reset } = useForm();
+
+  useEffect(() => {
+    const token = Cookies.get('token'); // read token from cookies
+    console.log;
+    if (token) {
+      setUserToken(token);
+    }
+
+    return () => setUserToken(null);
+  }, []); // runs once when app loads
+
   // Check if user is logged in on first load
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,13 +53,6 @@ export const AuthProvider = ({ children }) => {
 
     fetchUser();
   }, [userType]);
-
-  useEffect(() => {
-    const token = Cookies.get('token'); // read token from cookies
-    if (token) {
-      setUserToken(token);
-    }
-  }, []); // runs once when app loads
 
   // function to check and update expire time
   const resetExpireTime = async () => {
@@ -73,17 +78,15 @@ export const AuthProvider = ({ children }) => {
       });
       if (res.data) {
         const newUser = res.data.user;
-        const newToken = newUser.tokens[0].token;
+
         setUser(newUser);
+        setUserToken(Cookies.get('token'));
 
         setSnack({
           open: true,
           type: 'success',
           msg: `Welcome ${newUser.name}, Registration successful!`,
         });
-
-        // Set the token in cookies
-        setUserToken(newToken);
 
         return true;
       }
@@ -109,7 +112,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await API[method](
         `/api/${user.role}s/profileImage`,
-        formData
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
       );
 
       setProfileImage(res.data);
@@ -138,9 +144,8 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (res.data) {
-        // Set the token in cookies
-        setUserToken(res.data.token);
         setUser(res.data.user);
+        setUserToken(Cookies.get('token'));
         setSnack({
           open: true,
           type: 'success',
@@ -225,6 +230,8 @@ export const AuthProvider = ({ children }) => {
         setUserHasRole,
         showHeader,
         setShowHeader,
+        showFooter,
+        setShowFooter,
       }}
     >
       {children}

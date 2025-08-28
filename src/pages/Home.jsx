@@ -1,21 +1,13 @@
 // src/pages/HomePage.jsx
-import { useAuth } from '../context/AuthContext';
-
 import { useEffect, useState } from 'react';
 import ProductsList from '../components/Products/ProductsList';
-//import UploadImageToCloudinary from '../components/UploadImageToCloudinary';
 import API from '../api/axios';
-
 import { Box, Typography, CircularProgress, Alert } from '@mui/material';
-import { Link } from 'react-router-dom';
 
 export default function HomePage() {
   // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
-  const { setShowHeader } = useAuth();
-
-  useEffect(() => setShowHeader(false), []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -24,7 +16,7 @@ export default function HomePage() {
         setProducts(res.data || []);
         // setLoading(false);
       } catch (err) {
-        setError(err.message);
+        // setError(err.message);
         // setLoading(false);
       }
     };
@@ -84,11 +76,7 @@ export default function HomePage() {
 
       {/* Products Grid */}
 
-      {products ? (
-        <ProductsList title='Latest Products' />
-      ) : (
-        <ProductsList title='Latest Products' products={products} />
-      )}
+      <ProductsList title='Latest Products' />
     </Box>
   );
 }
