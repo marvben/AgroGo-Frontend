@@ -1,4 +1,5 @@
-import { Navigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate } from 'react-router-dom';
+
 import {
   AppBar,
   Toolbar,
@@ -24,7 +25,7 @@ import {
 
 const drawerWidth = 240;
 
-import ImageUpload from '../components/CloudinaryUploadImage';
+import ImageUpload from '../ImageUpload/CloudinaryUploadImage';
 
 export default function DashboardBuyer({ user }) {
   if (!user.isVerified) return <Navigate to='/verify' replace />;
@@ -156,7 +157,13 @@ export default function DashboardBuyer({ user }) {
               <Button variant='contained' fullWidth sx={{ mt: 2 }}>
                 Update Profile
               </Button>
-              <Button variant='outlined' fullWidth sx={{ mt: 2 }}>
+              <Button
+                component={RouterLink}
+                to='/reset-password'
+                variant='outlined'
+                fullWidth
+                sx={{ mt: 2 }}
+              >
                 Change Password
               </Button>
             </CardContent>

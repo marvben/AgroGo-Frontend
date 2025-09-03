@@ -1,12 +1,18 @@
-import ProductCard from './ProductCard/ProductCard';
+import ProductCard from '../ProductCard/ProductCard';
 import { Box, Container, Typography } from '@mui/material';
-import dummyProducts from '../../data/products'; // Assuming you have a products data file
+import dummyProducts from '../../../data/products'; // Assuming you have a products data file
+import { keyframes } from '@mui/system';
 
 const ProductsList = ({
   products = dummyProducts,
   title = 'Title Here',
   description = 'Description Here',
 }) => {
+  const fadeUp = keyframes`
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  `;
+
   if (!products || products.length === 0) {
     return (
       <Container sx={{ py: 8, textAlign: 'center' }}>
@@ -16,6 +22,7 @@ const ProductsList = ({
       </Container>
     );
   }
+
   return (
     <Container
       maxWidth={false}
@@ -25,8 +32,8 @@ const ProductsList = ({
         flexDirection: 'column',
         width: '100%',
         bgcolor: '#0f172a',
-
         color: '#fff',
+        animation: `${fadeUp} 0.6s ease-out`, // card animation
       }}
     >
       <Typography variant='h4' fontWeight='bold' gutterBottom sx={{ mb: 1 }}>
@@ -44,7 +51,8 @@ const ProductsList = ({
           gridTemplateColumns: {
             xs: '1fr',
             sm: '1fr 1fr',
-            md: 'repeat(auto-fill, minmax(300px, 1fr))',
+            md: 'repeat( 6, 1fr)',
+            // md: 'repeat(auto-fill, minmax(200px, 1fr))',
           },
         }}
       >

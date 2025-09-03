@@ -1,16 +1,17 @@
 import { Routes, Route } from 'react-router-dom';
 import { useAuth } from './context/useAuth';
-import AppNavbar from './components/AppNavbar';
+import AppNavbar from './components/Header/AppNavbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import DashBoard from './pages/DashBoardPage';
 import VerificationPage from './pages/VerificationPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import Footer from './components/Footer';
+import Footer from './components/Footer/Footer';
 import ProductPage from './pages/ProductsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import NotAuthorizedPage from './pages/NotAuthorizedPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 function App() {
   const { userUrl } = useAuth();
@@ -22,6 +23,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
+        <Route path='/reset-password' element={<ResetPasswordPage />} />
         <Route path='/products' element={<ProductPage />} />
 
         <Route

@@ -1,5 +1,5 @@
 import { TextField, MenuItem } from '@mui/material';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../../context/useAuth';
 
 const RegisterFormFields = ({
   inputStyles,

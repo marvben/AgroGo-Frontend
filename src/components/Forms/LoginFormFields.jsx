@@ -1,5 +1,5 @@
 import { TextField, MenuItem } from '@mui/material';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../../context/useAuth';
 
 const LoginFormFields = ({ inputStyles, userTypesList, register, errors }) => {
   const { setUserType } = useAuth();
@@ -58,4 +58,3 @@ const LoginFormFields = ({ inputStyles, userTypesList, register, errors }) => {
 };
 
 export default LoginFormFields;
-LoginFormFields;

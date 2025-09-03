@@ -10,7 +10,9 @@ const ProductCard = ({ product }) => {
   return (
     <Card
       sx={{
+        position: 'relative',
         maxWidth: 400,
+        width: '100%',
         bgcolor: '#1e293b',
         color: 'white',
         borderRadius: 3,
@@ -44,7 +46,15 @@ const ProductCard = ({ product }) => {
         <AddToCartButton product={product} />
       </CardContent>
 
-      <CardActions sx={{ justifyContent: 'space-between' }}>
+      <CardActions
+        sx={{
+          justifyContent: 'space-between',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          left: 0,
+        }}
+      >
         <WishlistButton productId={product.id} />
         <ShareButton product={product} />
       </CardActions>

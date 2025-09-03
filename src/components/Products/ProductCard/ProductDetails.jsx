@@ -1,11 +1,28 @@
 import { Typography } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 const ProductDetails = ({ product }) => {
+  const productUrl = `products/${
+    product.category ? product.category + '/' : ''
+  } ${product.id}`;
+
+  const inputStyles = {
+    fontSize: '16px',
+    fontWeight: 'bold',
+  };
   return (
     <>
-      <Typography variant='h6'>{product.title}</Typography>
-      <Typography variant='body2'>{product.description}</Typography>
-      <Typography variant='h6'>${product.price}</Typography>
+      <Typography
+        component={RouterLink}
+        to={productUrl.toLocaleLowerCase()}
+        variant='h6'
+        sx={inputStyles}
+      >
+        {product.title}
+      </Typography>
+      <Typography variant='h6' sx={inputStyles}>
+        ${product.price}
+      </Typography>
     </>
   );
 };

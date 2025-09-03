@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Container, Grid, Typography, IconButton } from '@mui/material';
 import { Facebook, Twitter, Instagram, LinkedIn } from '@mui/icons-material';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../../context/useAuth';
 
 const Footer = () => {
   const { showFooter } = useAuth(); // { id, username, role } or null

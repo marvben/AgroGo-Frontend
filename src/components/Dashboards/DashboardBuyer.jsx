@@ -1,4 +1,4 @@
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../../context/useAuth';
 import DashboardBuyer from './DashBoard';
 
 export default function DashboardBuyerPage() {

@@ -1,4 +1,4 @@
-import AuthForm from '../components/AuthForm';
+import AuthForm from '../components/Forms/AuthForm';
 import { useAuth } from '../context/useAuth';
 import { useState, useEffect } from 'react';
 import { Box, Snackbar, Alert } from '@mui/material';
@@ -9,17 +9,18 @@ export default function LoginPage() {
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
   const navigate = useNavigate();
 
-  // If already logged in, redirect away
-
-  if (user) return <Navigate to={userUrl} replace />;
-
   const handleLogin = async (data) => {
     setLoading(true);
 
     const ok = await login(data); // expect login() returns user
-    if (ok) navigate(userUrl);
-    setLoading(false);
+    if (ok) {
+      setLoading(false);
+      window.location.href = userUrl;
+    }
   };
+
+  // If already logged in, redirect away
+  if (user) return <Navigate to={userUrl} replace />;
 
   return (
     <Box

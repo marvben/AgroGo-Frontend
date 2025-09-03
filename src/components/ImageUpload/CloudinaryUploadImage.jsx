@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button, Card, CardContent, Box, Snackbar, Alert } from '@mui/material';
-import API from '../api/axios';
-import { useAuth } from '../context/useAuth';
+import API from '../../api/axios';
+import { useAuth } from '../../context/useAuth';
 
 export default function ImageUpload() {
   const [loading, setLoading] = useState(false);

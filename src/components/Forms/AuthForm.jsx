@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../../context/useAuth';
 import AuthFormLayout from './AuthFormLayout';
 import RegisterFormFields from './RegisterFormFields';
 import LoginFormFields from './LoginFormFields';
+import ResetPasswordFormFields from './ResetPasswordFormFields';
 import ButtonSubmit from './ButtonSubmit';
 
 export default function AuthForm({ mode = 'login', onSubmit, loading }) {
@@ -45,34 +46,49 @@ export default function AuthForm({ mode = 'login', onSubmit, loading }) {
   };
 
   return (
-    <AuthFormLayout title={mode === 'login' ? 'Login' : 'Register'}>
+    <AuthFormLayout
+      title={
+        mode === 'login'
+          ? 'Login'
+          : mode === 'resetPassword'
+          ? 'Reset Password'
+          : 'Register'
+      }
+    >
       <form onSubmit={handleSubmit(onSubmit)}>
         {mode === 'login' && (
-          <LoginFormFields
-            inputStyles={inputStyles}
-            userTypesList={userTypesList}
-            register={register}
-            errors={errors}
-          />
+          <>
+            <LoginFormFields
+              inputStyles={inputStyles}
+              userTypesList={userTypesList}
+              register={register}
+              errors={errors}
+            />
+            <ButtonSubmit loading={loading} text={`Login as ${userType}`} />
+          </>
         )}
-
         {mode === 'register' && (
-          <RegisterFormFields
-            inputStyles={inputStyles}
-            userTypesList={userTypesList}
-            register={register}
-            errors={errors}
-          />
+          <>
+            <RegisterFormFields
+              inputStyles={inputStyles}
+              userTypesList={userTypesList}
+              register={register}
+              errors={errors}
+            />{' '}
+            <ButtonSubmit loading={loading} text={`Register as ${userType}`} />
+          </>
         )}
-
-        <ButtonSubmit
-          loading={loading}
-          text={
-            mode === 'login'
-              ? `Login as ${userType}`
-              : `Register as ${userType}`
-          }
-        />
+        {mode === 'resetPassword' && (
+          <>
+            <ResetPasswordFormFields
+              inputStyles={inputStyles}
+              userTypesList={userTypesList}
+              register={register}
+              errors={errors}
+            />{' '}
+            <ButtonSubmit loading={loading} text='Reset Password ' />
+          </>
+        )}
       </form>
     </AuthFormLayout>
   );

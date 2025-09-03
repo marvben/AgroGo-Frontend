@@ -12,12 +12,12 @@ import {
   Divider,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../../context/useAuth';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
-import LogoutButton from './LogoutButton';
-import LoginLink from './LoginLink';
-import RegisterLink from './RegisterLink';
+import LogoutButton from '../LogoutButton';
+import LoginLink from '../LoginLink';
+import RegisterLink from '../RegisterLink';
 
 export default function AppNavbar() {
   const { user, userUrl, showHeader } = useAuth(); // { id, username, role } or null

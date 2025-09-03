@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/useAuth';
 import { Box, CircularProgress } from '@mui/material';
-import DashboardAdmin from '../components/DashboardAdmin';
-import DashboardBuyer from '../components/DashboardBuyer';
-import DashBoardFarmer from '../components/DashboardFarmer';
+import DashboardAdmin from '../components/Dashboards/DashboardAdmin';
+import DashboardBuyer from '../components/Dashboards/DashboardBuyer';
+import DashBoardFarmer from '../components/Dashboards/DashboardFarmer';
 
 export default function DashboardBuyerPage() {
   const { user } = useAuth();

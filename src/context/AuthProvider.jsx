@@ -13,17 +13,17 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true); // For initial auth check
   const [userType, setUserType] = useState('buyer'); // Default user type
   const [userUrl, setUserUrl] = useState('/dashboard');
-  const [expireTime, setExpireTime] = useState(null); // Optional: to track code expiration
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [requiredRole, setRequiredRole] = useState(false);
   const [userHasRole, setUserHasRole] = useState(false);
+  const [hashTokenExpired, setHashTokenExpired] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const { reset } = useForm();
 
   useEffect(() => {
     const token = Cookies.get('token'); // read token from cookies
-    console.log;
+
     if (token) {
       setUserToken(token);
     }
@@ -51,24 +51,8 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
-    fetchUser();
-  }, [userType]);
-
-  // function to check and update expire time
-  const resetExpireTime = async () => {
-    if (user && user.verificationCodeExpires) {
-      const expiresAt = new Date(user.verificationCodeExpires);
-      const now = new Date();
-      const timeRemaining = expiresAt.getTime() - now.getTime(); // milliseconds left
-      const minutes = Math.floor(timeRemaining / 60000); // 1 min = 60,000 ms
-      const seconds = Math.floor((timeRemaining % 60000) / 1000);
-
-      // Save remaining time in seconds (or ms depending on your use case)
-      setExpireTime(`Time remaining: ${minutes}m ${seconds}s`);
-    } else {
-      setExpireTime(null);
-    }
-  };
+    if (userToken) fetchUser();
+  }, [userType, userToken]);
 
   // Register function
   const register = async (data) => {
@@ -78,9 +62,10 @@ export const AuthProvider = ({ children }) => {
       });
       if (res.data) {
         const newUser = res.data.user;
+        const newToken = res.data.token;
 
         setUser(newUser);
-        setUserToken(Cookies.get('token'));
+        Cookies.set('token', newToken, { expires: 7 });
 
         setSnack({
           open: true,
@@ -105,37 +90,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const uploadImageToCloudinary = async (data, method) => {
-    const formData = new FormData();
-    formData.append('profileImage', data.image[0]); // matches multer field name
-
-    try {
-      const res = await API[method](
-        `/api/${user.role}s/profileImage`,
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }
-      );
-
-      setProfileImage(res.data);
-      setSnack({
-        open: true,
-        type: 'success',
-        msg: method === 'post' ? 'Upload successful' : 'Update successful',
-      });
-      reset();
-    } catch (err) {
-      setSnack({
-        open: true,
-        type: 'error',
-        msg:
-          err.response?.data?.error ||
-          'Something went wrong, image not uploaded',
-      });
-    }
-  };
-
   // Login function
   const login = async (data) => {
     try {
@@ -144,8 +98,10 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (res.data) {
-        setUser(res.data.user);
-        setUserToken(Cookies.get('token'));
+        const newUser = res.data.user;
+        const newToken = res.data.token;
+        setUser(newUser);
+        Cookies.set('token', newToken, { expires: 7 });
         setSnack({
           open: true,
           type: 'success',
@@ -203,6 +159,139 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // function to check and update expire time
+  const resetExpireTime = async () => {
+    if (user) {
+      const expiresAt = new Date(user.verificationCodeExpires);
+      const now = new Date();
+      const timeRemaining = expiresAt.getTime() - now.getTime(); // milliseconds left
+      const minutes = Math.floor(timeRemaining / 60000); // 1 min = 60,000 ms
+      const seconds = Math.floor((timeRemaining % 60000) / 1000);
+
+      // Save remaining time in seconds (or ms depending on your use case)
+      return `Time remaining: ${minutes}m ${seconds}s`;
+    } else {
+      return null;
+    }
+  };
+
+  const resetPassword = async (data) => {
+    try {
+      const res = await API.post(`/api/${userType}s/resetPassword`, data);
+      if (res.data) {
+        setSnack({
+          open: true,
+          type: 'success',
+          msg: res.data || 'Login Successful',
+        });
+        setHashTokenExpired(false);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      setSnack({
+        open: true,
+        type: 'error',
+        msg: err?.response?.data?.message || err.message,
+      });
+      return false;
+    }
+  };
+
+  const saveNewPassword = async (data, params) => {
+    const url = `/api/${userType}s/resetPassword${params}`;
+
+    try {
+      const res = await API.patch(url, data);
+      if (res.data) {
+        setSnack({
+          open: true,
+          type: 'success',
+          msg: res.data || 'Password Updated',
+        });
+
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.log(err);
+      if (err?.response?.data?.expired) setHashTokenExpired(true);
+      setSnack({
+        open: true,
+        type: 'error',
+        msg: err?.response?.data?.message || err.message,
+      });
+      return false;
+    }
+  };
+
+  const checkResetPasswordUrlValidity = async (params) => {
+    const url = `/api/${userType}s/resetPassword${params}`;
+
+    try {
+      const res = await API.get(url);
+      const { expired, message } = res.data;
+
+      if (expired) {
+        setSnack({
+          open: true,
+          type: 'error',
+          msg: message || 'Token expired',
+        });
+        return expired;
+      }
+
+      setSnack({
+        open: true,
+        type: 'success',
+        msg: message || 'Link expires in 15mins',
+      });
+      return expired;
+    } catch (err) {
+      if (err?.response?.data?.expired) setHashTokenExpired(true);
+      setSnack({
+        open: true,
+        type: 'error',
+        msg: err?.response?.data?.message || err.message,
+      });
+      return false;
+    }
+  };
+
+  const uploadImageToCloudinary = async (data, method) => {
+    const formData = new FormData();
+    formData.append('profileImage', data.image[0]); // matches multer field name
+
+    try {
+      const result = await API[method](
+        `/api/${user.role}s/profileImage`,
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+      );
+      if (result.data) {
+        setSnack({
+          open: true,
+          type: 'success',
+          msg: method === 'post' ? 'Upload successful' : 'Update successful',
+        });
+        reset();
+        return result.data;
+      }
+      return null;
+    } catch (err) {
+      setSnack({
+        open: true,
+        type: 'error',
+        msg:
+          err.response?.data?.error ||
+          err?.message ||
+          'Something went wrong, image not uploaded',
+      });
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -219,8 +308,6 @@ export const AuthProvider = ({ children }) => {
         setUserUrl,
         userToken,
         setUserToken,
-        expireTime,
-        setExpireTime,
         resetExpireTime,
         isAuthenticated,
         setIsAuthenticated,
@@ -232,6 +319,11 @@ export const AuthProvider = ({ children }) => {
         setShowHeader,
         showFooter,
         setShowFooter,
+        resetPassword,
+        saveNewPassword,
+        hashTokenExpired,
+        setHashTokenExpired,
+        checkResetPasswordUrlValidity,
       }}
     >
       {children}

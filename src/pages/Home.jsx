@@ -1,11 +1,11 @@
 // src/pages/HomePage.jsx
 import { useEffect, useState } from 'react';
-import ProductsList from '../components/Products/ProductsList';
+import ProductsList from '../components/Products/ProductsList/ProductsList';
 import API from '../api/axios';
-import { Box, Typography, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Alert } from '@mui/material';
 
 export default function HomePage() {
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
 
@@ -16,8 +16,8 @@ export default function HomePage() {
         setProducts(res.data || []);
         // setLoading(false);
       } catch (err) {
-        // setError(err.message);
-        // setLoading(false);
+        setError(err.message);
+        setLoading(false);
       }
     };
 
@@ -63,7 +63,14 @@ export default function HomePage() {
   ////////////////////
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#0f172a', color: 'white', p: 4 }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: '#0f172a',
+        color: 'white',
+        p: { xs: 1, sm: 2, md: 4 },
+      }}
+    >
       {/* Hero Section */}
       <Box sx={{ textAlign: 'center', mb: 6 }}>
         <Typography variant='h3' fontWeight='bold' sx={{ color: '#38bdf8' }}>

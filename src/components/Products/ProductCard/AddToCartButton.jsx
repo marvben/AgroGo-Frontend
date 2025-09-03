@@ -3,7 +3,11 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 export default function AddToCartButton() {
   return (
-    <Button variant='contained' startIcon={<ShoppingCartIcon />}>
+    <Button
+      variant='contained'
+      sx={{ fontSize: '10px' }}
+      startIcon={<ShoppingCartIcon />}
+    >
       Add to Cart
     </Button>
   );
