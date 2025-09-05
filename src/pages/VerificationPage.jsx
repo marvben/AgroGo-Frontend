@@ -21,7 +21,7 @@ import API from '../api/axios'; // your axios instance (withCredentials: true)
 import { useAuth } from '../context/useAuth';
 
 export default function VerifyCode() {
-  const { user, resetExpireTime, userUrl, expireTime } = useAuth(); // Assuming user is fetched from context
+  const { user, resetExpireTime, userType, userUrl, expireTime } = useAuth(); // Assuming user is fetched from context
   const [showCode, setShowCode] = useState(false);
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
   const [pageTitle, setPageTitle] = useState('Verify Code');
@@ -41,8 +41,8 @@ export default function VerifyCode() {
       setPageTitle('Verifying Code...');
       try {
         const res = await API.patch(
-          `/api/${user.role}s/verify`,
-          { verificationCode: code, email: user.email },
+          `/api/${userType}s/verify`,
+          { code, email: user.email },
           {
             withCredentials: true,
           }
@@ -84,7 +84,7 @@ export default function VerifyCode() {
     setPageTitle('Sending New Code...');
     try {
       const res = await API.patch(
-        `/api/${user.role}s/verification-code`,
+        `/api/${userType}s/verification-code`,
         { email: user.email },
         { withCredentials: true }
       );
@@ -166,7 +166,7 @@ export default function VerifyCode() {
             {user.isVerified && (
               <Button
                 component={RouterLink}
-                to={`/${user.role}`}
+                to={`/${userType}`}
                 variant='contained'
                 color='primary'
                 fullWidth={true}

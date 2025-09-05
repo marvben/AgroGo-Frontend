@@ -8,11 +8,10 @@ export default function LogoutButton({ fullWidth = false }) {
 
   const handleLogout = async () => {
     try {
-      await logout(); // clears cookie on backend + updates ctx
-      navigate('/'); // optional redirect
+      const ok = await logout();
+      if (ok) navigate('/');
     } catch (err) {
       console.error(err);
-      alert('Failed to logout');
     }
   };
 

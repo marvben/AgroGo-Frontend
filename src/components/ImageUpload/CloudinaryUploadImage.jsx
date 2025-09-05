@@ -1,26 +1,36 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Button, Card, CardContent, Box, Snackbar, Alert } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  Card,
+  CardContent,
+  Box,
+  Snackbar,
+  Alert,
+} from '@mui/material';
 import API from '../../api/axios';
 import { useAuth } from '../../context/useAuth';
 
 export default function ImageUpload() {
-  const [loading, setLoading] = useState(false);
-
-  const { user } = useAuth();
+  const { user, userType } = useAuth();
   const { control, handleSubmit, reset } = useForm();
-  const [profileImage, setProfileImage] = useState(
-    user?.profileImageUrl?.secure_url || ''
+
+  const [loading, setLoading] = useState(false);
+  const [uploadedProfileImage, setUploadedProfileImage] = useState(
+    user?.profileImageUrl?.secure_url
   );
+  const [showFileInput, setShowFileInput] = useState(false);
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
 
   const handleImageAction = async (data, method = 'post') => {
+    setLoading(true);
     const formData = new FormData();
     formData.append('profileImage', data.image[0]); // matches multer field name
 
     try {
-      const res = await API[method](
-        `/api/${user.role}s/profileImage`,
+      const result = await API[method](
+        `/api/${userType}s/profileImage`,
         formData,
         {
           withCredentials: true,
@@ -29,16 +39,22 @@ export default function ImageUpload() {
           },
         }
       );
+      if (result.data.success) {
+        setUploadedProfileImage(result.data);
 
-      setProfileImage(res.data);
-      setSnack({
-        open: true,
-        type: 'success',
-        msg: method === 'post' ? 'Upload successful' : 'Update successful',
-      });
-      reset();
+        setSnack({
+          open: true,
+          type: 'success',
+          msg: 'Update successful',
+        });
+
+        setLoading(false);
+        setShowFileInput(false);
+        reset({ image: null });
+      }
     } catch (err) {
       console.log(err);
+      setLoading(false);
       setSnack({
         open: true,
         type: 'error',
@@ -48,15 +64,14 @@ export default function ImageUpload() {
   };
 
   const onUpload = (data) => handleImageAction(data, 'post');
-  const onUpdate = (data) => handleImageAction(data, 'put');
+  const onUpdate = (data) => handleImageAction(data, 'patch');
 
   const onDelete = async () => {
     try {
-      await API.delete(`/api/${user.role}s/profileImage`, {
+      await API.delete(`/api/${userType}s/profileImage`, {
         data: { public_id: user.profileImageUrl.public_id },
       });
 
-      setProfileImage(null);
       setSnack({ open: true, type: 'success', msg: 'Delete successful' });
       reset();
     } catch (err) {
@@ -74,29 +89,36 @@ export default function ImageUpload() {
     >
       <CardContent>
         {/* Show current image if available */}
-        {profileImage && (
+
+        {uploadedProfileImage && (
           <Box sx={{ textAlign: 'center', mb: 2 }}>
             <img
-              src={profileImage}
+              src={uploadedProfileImage}
               alt='Profile'
               style={{ width: '120px', height: '120px', borderRadius: '50%' }}
             />
           </Box>
         )}
 
-        <form onSubmit={handleSubmit(profileImage ? onUpdate : onUpload)}>
-          <Controller
-            name='image'
-            control={control}
-            rules={{ required: !profileImage }}
-            render={({ field }) => (
-              <input
-                type='file'
-                accept='image/*'
-                onChange={(e) => field.onChange(e.target.files[0])}
-              />
-            )}
-          />
+        <form
+          onSubmit={handleSubmit(uploadedProfileImage ? onUpdate : onUpload)}
+        >
+          {showFileInput && (
+            <Controller
+              name='image'
+              control={control}
+              rules={{ required: !uploadedProfileImage }}
+              render={({ field }) => (
+                <input
+                  type='file'
+                  accept='image/*'
+                  onChange={(e) => {
+                    field.onChange(e.target.files); // store full FileList, not just one
+                  }}
+                />
+              )}
+            />
+          )}
 
           <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
             {/* Upload or Update button */}
@@ -120,11 +142,13 @@ export default function ImageUpload() {
               disabled={loading}
               startIcon={loading && <CircularProgress size={20} />}
             >
-              {profileImage ? 'Change Profile Image' : 'Upload Profile Image'}
+              {uploadedProfileImage
+                ? 'Change Profile Image'
+                : 'Upload Profile Image'}
             </Button>
 
             {/* Delete button only if image exists */}
-            {profileImage && (
+            {uploadedProfileImage && (
               <Button
                 type='submit'
                 fullWidth

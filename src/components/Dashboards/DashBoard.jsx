@@ -22,6 +22,7 @@ import {
   Logout,
   Dashboard,
 } from '@mui/icons-material';
+import { keyframes } from '@mui/system';
 
 const drawerWidth = 240;
 
@@ -30,8 +31,13 @@ import ImageUpload from '../ImageUpload/CloudinaryUploadImage';
 export default function DashboardBuyer({ user }) {
   if (!user.isVerified) return <Navigate to='/verify' replace />;
 
+  const fadeUp = keyframes`
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    `;
+
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', animation: `${fadeUp} 0.6s ease-out` }}>
       {/* Sidebar */}
       {/* <Drawer
         sx={{

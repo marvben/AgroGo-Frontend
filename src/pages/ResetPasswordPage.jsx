@@ -7,25 +7,25 @@ import { useLocation, useNavigate } from 'react-router-dom';
 export default function ResetPasswordPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { resetPassword, saveNewPassword, checkResetPasswordUrlValidity } =
+  const { forgotPassword, resetPassword, resetExpireTime, checkUrlValidity } =
     useAuth();
+
   const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
+
   const params = location.search;
   const requestType = params ? 'patch' : 'post';
 
   const urlParams = new URLSearchParams(params);
-  const getTokenParam = urlParams.get('token');
-  const getTokenUserId = urlParams.get('userid');
+  const getTokenParam = urlParams.get('resetToken');
 
   useEffect(() => {
     const isResetLinkExpired = async () => {
-      await checkResetPasswordUrlValidity(params);
+      await checkUrlValidity(getTokenParam);
+      await resetExpireTime();
     };
 
-    if (getTokenParam && getTokenUserId) {
-      isResetLinkExpired();
-    }
+    if (getTokenParam) isResetLinkExpired();
   }, []);
 
   const handlePasswordReset = async (data) => {
@@ -35,11 +35,13 @@ export default function ResetPasswordPage() {
       // Choose request based on requestType
       let ok;
       if (requestType === 'post') {
-        ok = await resetPassword(data);
-        navigate('/login');
+        ok = await forgotPassword(data);
+        setLoading(false);
+        if (ok) navigate('/login');
       } else {
-        ok = await saveNewPassword(data, params);
-        navigate('/dashboard');
+        ok = await resetPassword(data, getTokenParam);
+        setLoading(false);
+        if (ok) navigate('/login');
       }
 
       if (ok) {

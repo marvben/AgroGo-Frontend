@@ -66,13 +66,13 @@ export default function AppNavbar() {
             Products
           </Button>
 
-          {user && (
+          {user?.role === 'farmer' && (
             <Button
               component={RouterLink}
               to={userUrl}
               sx={{ color: 'white', textTransform: 'capitalize' }}
             >
-              {user.role} Dashboard
+              My Products
             </Button>
           )}
         </Stack>
@@ -82,6 +82,8 @@ export default function AppNavbar() {
           {user ? (
             <Stack direction='row' alignItems='center' spacing={1}>
               <Avatar
+                component={RouterLink}
+                to={userUrl}
                 sx={{
                   bgcolor: '#334155',
                   border: '2px solid #475569',
@@ -90,7 +92,12 @@ export default function AppNavbar() {
               >
                 {user.username?.charAt(0).toUpperCase()}
               </Avatar>
-              <Typography variant='body2' sx={{ color: 'white' }}>
+              <Typography
+                component={RouterLink}
+                to={userUrl}
+                variant='body2'
+                sx={{ color: 'white' }}
+              >
                 {user.username} ({user.role})
               </Typography>
               <LogoutButton />

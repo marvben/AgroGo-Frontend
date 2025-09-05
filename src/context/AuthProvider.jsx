@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
 import API from '../api/axios';
 import { AuthContext } from './AuthContext';
-import { Box, Snackbar, Alert } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import Notification from './Notification';
 
 export const AuthProvider = ({ children }) => {
   const [showHeader, setShowHeader] = useState(true);
   const [showFooter, setShowFooter] = useState(true);
-  const [userToken, setUserToken] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // For initial auth check
   const [userType, setUserType] = useState('buyer'); // Default user type
@@ -18,18 +16,8 @@ export const AuthProvider = ({ children }) => {
   const [requiredRole, setRequiredRole] = useState(false);
   const [userHasRole, setUserHasRole] = useState(false);
   const [hashTokenExpired, setHashTokenExpired] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
+
   const { reset } = useForm();
-
-  useEffect(() => {
-    const token = Cookies.get('token'); // read token from cookies
-
-    if (token) {
-      setUserToken(token);
-    }
-
-    return () => setUserToken(null);
-  }, []); // runs once when app loads
 
   // Check if user is logged in on first load
   useEffect(() => {
@@ -38,6 +26,7 @@ export const AuthProvider = ({ children }) => {
         const res = await API.get(`/api/${userType}s/profile`, {
           withCredentials: true, // 🔑 this tells axios to send cookies
         }); // Backend should return { user }
+
         if (!res.data) {
           setUser(null);
           return;
@@ -51,8 +40,8 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
-    if (userToken) fetchUser();
-  }, [userType, userToken]);
+    fetchUser();
+  }, [userType]);
 
   // Register function
   const register = async (data) => {
@@ -62,15 +51,12 @@ export const AuthProvider = ({ children }) => {
       });
       if (res.data) {
         const newUser = res.data.user;
-        const newToken = res.data.token;
-
         setUser(newUser);
-        Cookies.set('token', newToken, { expires: 7 });
 
         setSnack({
           open: true,
           type: 'success',
-          msg: `Welcome ${newUser.name}, Registration successful!`,
+          msg: `Welcome ${newUser.name.toUpperCase()}, Registration successful!`,
         });
 
         return true;
@@ -85,7 +71,7 @@ export const AuthProvider = ({ children }) => {
           error?.message ||
           'Registration failed',
       });
-      console.log(error);
+
       return false;
     }
   };
@@ -93,15 +79,14 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = async (data) => {
     try {
-      const res = await API.post(`/api/${userType}s/login`, data, {
+      const result = await API.post(`/api/${userType}s/login`, data, {
         withCredentials: true,
       });
+      const { user: newUser } = result.data;
 
-      if (res.data) {
-        const newUser = res.data.user;
-        const newToken = res.data.token;
+      if (newUser) {
         setUser(newUser);
-        Cookies.set('token', newToken, { expires: 7 });
+
         setSnack({
           open: true,
           type: 'success',
@@ -111,6 +96,7 @@ export const AuthProvider = ({ children }) => {
       }
       return false;
     } catch (err) {
+      console.log(err);
       setSnack({
         open: true,
         type: 'error',
@@ -123,19 +109,21 @@ export const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = async () => {
+    if (!user) return false; // already logged out, do nothing
     try {
-      const res = await API.post(`/api/${userType}s/logout`, {
+      await API.post(`/api/${userType}s/logout`, {
         withCredentials: true,
-      }); // Backend should clear cookie
-      console.log('Logout response:', res.data);
-      Cookies.remove('token');
-      return true;
-    } catch (error) {
+      });
+
+      setUser(null); // Clear user/token
       setSnack({
         open: true,
-        type: 'error',
-        msg: error?.response?.data?.message || 'Logout failed',
+        type: 'success',
+        msg: 'Logged out successfully!',
       });
+      return true;
+    } catch (error) {
+      setSnack({ open: true, type: 'error', msg: 'Logout failed' });
       return false;
     }
   };
@@ -146,7 +134,7 @@ export const AuthProvider = ({ children }) => {
       await API.delete(`/api/${userType}s/delete`, {
         withCredentials: true,
       });
-      Cookies.remove('token');
+
       return true;
     } catch (err) {
       setSnack({
@@ -169,20 +157,25 @@ export const AuthProvider = ({ children }) => {
       const seconds = Math.floor((timeRemaining % 60000) / 1000);
 
       // Save remaining time in seconds (or ms depending on your use case)
-      return `Time remaining: ${minutes}m ${seconds}s`;
+
+      setSnack({
+        open: true,
+        type: 'success',
+        msg: `Time remaining: ${minutes}m ${seconds}s`,
+      });
     } else {
       return null;
     }
   };
 
-  const resetPassword = async (data) => {
+  const forgotPassword = async (data) => {
     try {
-      const res = await API.post(`/api/${userType}s/resetPassword`, data);
+      const res = await API.post(`/api/${userType}s/forgot-password`, data);
       if (res.data) {
         setSnack({
           open: true,
           type: 'success',
-          msg: res.data || 'Login Successful',
+          msg: 'Reset email sent',
         });
         setHashTokenExpired(false);
         return true;
@@ -192,41 +185,41 @@ export const AuthProvider = ({ children }) => {
       setSnack({
         open: true,
         type: 'error',
-        msg: err?.response?.data?.message || err.message,
+        msg: 'Unsuccessful, try again!',
       });
       return false;
     }
   };
 
-  const saveNewPassword = async (data, params) => {
-    const url = `/api/${userType}s/resetPassword${params}`;
+  const resetPassword = async (data, params) => {
+    const url = `/api/${userType}s/reset-password/${params}`;
+    console.log(url);
 
     try {
       const res = await API.patch(url, data);
-      if (res.data) {
+      if (res.data.success) {
         setSnack({
           open: true,
           type: 'success',
-          msg: res.data || 'Password Updated',
+          msg: 'Password Update Successful',
         });
 
         return true;
       }
       return false;
     } catch (err) {
-      console.log(err);
       if (err?.response?.data?.expired) setHashTokenExpired(true);
       setSnack({
         open: true,
         type: 'error',
-        msg: err?.response?.data?.message || err.message,
+        msg: 'Unsuccessful, Link expired',
       });
       return false;
     }
   };
 
-  const checkResetPasswordUrlValidity = async (params) => {
-    const url = `/api/${userType}s/resetPassword${params}`;
+  const checkUrlValidity = async (params) => {
+    const url = `/api/${userType}s/reset-password/${params}`;
 
     try {
       const res = await API.get(url);
@@ -259,12 +252,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const uploadImageToCloudinary = async (data, method) => {
+    if (!data.image?.[0]) {
+      setSnack({ open: true, type: 'error', msg: 'No image selected' });
+      return;
+    }
     const formData = new FormData();
     formData.append('profileImage', data.image[0]); // matches multer field name
-
+    console.log(data.image?.[0]);
     try {
       const result = await API[method](
-        `/api/${user.role}s/profileImage`,
+        `/api/${userType}s/profileImage`,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -274,7 +271,7 @@ export const AuthProvider = ({ children }) => {
         setSnack({
           open: true,
           type: 'success',
-          msg: method === 'post' ? 'Upload successful' : 'Update successful',
+          msg: 'Upload successful',
         });
         reset();
         return result.data;
@@ -285,8 +282,9 @@ export const AuthProvider = ({ children }) => {
         open: true,
         type: 'error',
         msg:
+          err.response?.data?.message ||
           err.response?.data?.error ||
-          err?.message ||
+          err.message ||
           'Something went wrong, image not uploaded',
       });
     }
@@ -306,8 +304,6 @@ export const AuthProvider = ({ children }) => {
         setUserType,
         userUrl,
         setUserUrl,
-        userToken,
-        setUserToken,
         resetExpireTime,
         isAuthenticated,
         setIsAuthenticated,
@@ -319,29 +315,15 @@ export const AuthProvider = ({ children }) => {
         setShowHeader,
         showFooter,
         setShowFooter,
+        forgotPassword,
         resetPassword,
-        saveNewPassword,
         hashTokenExpired,
         setHashTokenExpired,
-        checkResetPasswordUrlValidity,
+        checkUrlValidity,
       }}
     >
       {children}
-      <Snackbar
-        open={snack.open}
-        autoHideDuration={4000}
-        onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          severity={snack.type}
-          variant='filled'
-          sx={{ width: '100%' }}
-        >
-          {snack.msg}
-        </Alert>
-      </Snackbar>
+      <Notification snack={snack} setSnack={setSnack} />
     </AuthContext.Provider>
   );
 };

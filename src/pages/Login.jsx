@@ -13,9 +13,9 @@ export default function LoginPage() {
     setLoading(true);
 
     const ok = await login(data); // expect login() returns user
+    setLoading(false);
     if (ok) {
-      setLoading(false);
-      window.location.href = userUrl;
+      navigate(userUrl);
     }
   };
 
