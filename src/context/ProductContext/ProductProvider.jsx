@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProductContext } from './ProductContext';
-import Notification from '../../utils/Notification';
+import Notification from '../../Uputilities/Notification';
 import useSnackbar from '../../hooks/useSnackbar';
 
 import {
