@@ -1,5 +1,5 @@
 // utils/timeUtils.js
-export const getRemainingTime = (expiresAt) => {
+const getRemainingTime = (expiresAt) => {
   const now = new Date();
   const exp = new Date(expiresAt);
   const timeRemaining = exp.getTime() - now.getTime();
@@ -9,3 +9,4 @@ export const getRemainingTime = (expiresAt) => {
 
   return { minutes, seconds, timeRemaining };
 };
+export default getRemainingTime;
