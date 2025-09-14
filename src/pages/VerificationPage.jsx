@@ -17,11 +17,11 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
-import API from '../api/axios'; // your axios instance (withCredentials: true)
-import { useAuth } from '../context/useAuth';
+import API from '../api/axios'; //  axios instance (withCredentials: true)
+import { useAuth } from '../context/AuthContext/useAuth';
 
 export default function VerifyCode() {
-  const { user, resetExpireTime, userType, userUrl, expireTime } = useAuth(); // Assuming user is fetched from context
+  const { user, resetExpireTime, role, userUrl, expireTime } = useAuth(); // Assuming user is fetched from context
   const [showCode, setShowCode] = useState(false);
   const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
   const [pageTitle, setPageTitle] = useState('Verify Code');
@@ -40,13 +40,10 @@ export default function VerifyCode() {
     if (code.trim() === user.verificationCode || !user.isVerified) {
       setPageTitle('Verifying Code...');
       try {
-        const res = await API.patch(
-          `/api/${userType}s/verify`,
-          { code, email: user.email },
-          {
-            withCredentials: true,
-          }
-        );
+        const res = await API.patch(`/api/users/verify`, {
+          code,
+          email: user.email,
+        });
         if (res.data) {
           setSnack({ open: true, type: 'success', msg: 'Account verified.' });
 
@@ -83,11 +80,9 @@ export default function VerifyCode() {
   const getNewCode = async () => {
     setPageTitle('Sending New Code...');
     try {
-      const res = await API.patch(
-        `/api/${userType}s/verification-code`,
-        { email: user.email },
-        { withCredentials: true }
-      );
+      const res = await API.post('/api/users/verification-code', {
+        email: user.email,
+      });
 
       // Check for expected success flag or code field
       if (res.data?.verificationCode) {
@@ -166,7 +161,7 @@ export default function VerifyCode() {
             {user.isVerified && (
               <Button
                 component={RouterLink}
-                to={`/${userType}`}
+                to={`/${role}`}
                 variant='contained'
                 color='primary'
                 fullWidth={true}

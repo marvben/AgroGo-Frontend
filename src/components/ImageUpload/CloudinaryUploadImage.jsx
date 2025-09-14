@@ -10,7 +10,7 @@ import {
   Alert,
 } from '@mui/material';
 import API from '../../api/axios';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../context/AuthContext/useAuth';
 
 export default function ImageUpload() {
   const { user, userType } = useAuth();

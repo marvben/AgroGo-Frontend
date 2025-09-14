@@ -12,12 +12,12 @@ import {
   Divider,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../context/AuthContext/useAuth';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
-import LogoutButton from '../LogoutButton';
-import LoginLink from '../LoginLink';
-import RegisterLink from '../RegisterLink';
+import LogoutButton from '../../Utils/LogoutButton';
+import LoginLink from '../../Utils/LoginLink';
+import RegisterLink from '../../Utils/RegisterLink';
 
 export default function AppNavbar() {
   const { user, userUrl, showHeader } = useAuth(); // { id, username, role } or null
@@ -67,13 +67,22 @@ export default function AppNavbar() {
           </Button>
 
           {user?.role === 'farmer' && (
-            <Button
-              component={RouterLink}
-              to={userUrl}
-              sx={{ color: 'white', textTransform: 'capitalize' }}
-            >
-              My Products
-            </Button>
+            <>
+              <Button
+                component={RouterLink}
+                to='/create-product'
+                sx={{ color: 'white' }}
+              >
+                Create product
+              </Button>
+              <Button
+                component={RouterLink}
+                to={userUrl}
+                sx={{ color: 'white', textTransform: 'capitalize' }}
+              >
+                Manage my products
+              </Button>
+            </>
           )}
         </Stack>
 

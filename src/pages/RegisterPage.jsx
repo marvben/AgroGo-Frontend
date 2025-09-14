@@ -1,7 +1,7 @@
 import { useNavigate, Navigate } from 'react-router-dom';
 
-import AuthForm from '../components/Forms/AuthForm';
-import { useAuth } from '../context/useAuth';
+import AuthForm from '../components/Forms/AuthForm/AuthForm';
+import { useAuth } from '../context/AuthContext/useAuth';
 import { useState } from 'react';
 import { Box, Snackbar, Alert } from '@mui/material';
 

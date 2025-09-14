@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../context/AuthContext/useAuth';
 import { Box, CircularProgress } from '@mui/material';
 import DashboardAdmin from '../components/Dashboards/DashboardAdmin';
 import DashboardBuyer from '../components/Dashboards/DashboardBuyer';

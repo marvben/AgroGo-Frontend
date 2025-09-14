@@ -1,13 +1,8 @@
 import { TextField, MenuItem } from '@mui/material';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../../context/AuthContext/useAuth';
 
-const RegisterFormFields = ({
-  inputStyles,
-  userTypesList,
-  register,
-  errors,
-}) => {
-  const { userType, setUserType } = useAuth();
+const RegisterFormFields = ({ inputStyles, roles, register, errors }) => {
+  const { role, setRole } = useAuth();
 
   return (
     <>
@@ -38,9 +33,9 @@ const RegisterFormFields = ({
         defaultValue='buyer'
         fullWidth
         margin='normal'
-        {...register('userType', { required: 'Account type is required' })}
-        error={!!errors.userType}
-        helperText={errors.userType?.message}
+        {...register('role', { required: 'Account type is required' })}
+        error={!!errors.role}
+        helperText={errors.role?.message}
         sx={{
           ...inputStyles,
           '& .MuiInputBase-root': {
@@ -48,12 +43,8 @@ const RegisterFormFields = ({
           },
         }}
       >
-        {userTypesList.map((option, idx) => (
-          <MenuItem
-            key={idx}
-            value={option}
-            onClick={() => setUserType(option)}
-          >
+        {roles.map((option, idx) => (
+          <MenuItem key={idx} value={option} onClick={() => setRole(option)}>
             {option}
           </MenuItem>
         ))}
@@ -94,15 +85,7 @@ const RegisterFormFields = ({
         helperText={errors.phone?.message}
         sx={inputStyles}
       />
-      <TextField
-        type='file'
-        label='Profile Image'
-        InputLabelProps={{ shrink: true }}
-        inputProps={{ accept: 'image/*' }}
-        fullWidth
-        sx={{ ...inputStyles, mb: 3 }}
-        {...register('image', { required: true })}
-      />
+
       <TextField
         label='Address'
         fullWidth
@@ -137,7 +120,7 @@ const RegisterFormFields = ({
       />
 
       {/* Farm details */}
-      {userType === 'farmer' && (
+      {role === 'farmer' && (
         <>
           <TextField
             label='Farm Name'

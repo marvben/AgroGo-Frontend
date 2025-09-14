@@ -1,6 +1,6 @@
 // src/components/RoleRoute.jsx
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../context/AuthContext/useAuth';
 import { Box, CircularProgress } from '@mui/material';
 
 const RoleRoute = ({ children, allow = [] }) => {

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../context/AuthContext/useAuth';
 
 const NotFoundPage = () => {
   const { setShowHeader, setShowFooter } = useAuth();

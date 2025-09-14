@@ -2,16 +2,17 @@
 import { Box, Paper, Typography, Link } from '@mui/material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { keyframes } from '@mui/system';
-// Animation for the card
-const fadeUp = keyframes`
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-`;
 
 export default function AuthFormLayout({ title, children }) {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
   const isResetPasswordPage = location.pathname === '/reset-password';
+
+  // Animation for the card
+  const fadeUp = keyframes`
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
 
   return (
     <Box

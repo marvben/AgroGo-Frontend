@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../../context/AuthContext/useAuth';
 import AuthFormLayout from './AuthFormLayout';
 import RegisterFormFields from './RegisterFormFields';
 import LoginFormFields from './LoginFormFields';
@@ -7,14 +7,14 @@ import ResetPasswordFormFields from './ResetPasswordFormFields';
 import ButtonSubmit from './ButtonSubmit';
 
 export default function AuthForm({ mode = 'login', onSubmit, loading }) {
-  const { userType } = useAuth();
+  const { role } = useAuth();
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm();
 
-  const userTypesList = ['farmer', 'buyer'];
+  const roles = ['customer', 'farmer'];
 
   const inputStyles = {
     '& .MuiInputBase-input': {
@@ -60,29 +60,29 @@ export default function AuthForm({ mode = 'login', onSubmit, loading }) {
           <>
             <LoginFormFields
               inputStyles={inputStyles}
-              userTypesList={userTypesList}
+              roles={roles}
               register={register}
               errors={errors}
             />
-            <ButtonSubmit loading={loading} text={`Login as ${userType}`} />
+            <ButtonSubmit loading={loading} text={`Login`} />
           </>
         )}
         {mode === 'register' && (
           <>
             <RegisterFormFields
               inputStyles={inputStyles}
-              userTypesList={userTypesList}
+              roles={roles}
               register={register}
               errors={errors}
             />{' '}
-            <ButtonSubmit loading={loading} text={`Register as ${userType}`} />
+            <ButtonSubmit loading={loading} text={`Register as ${role}`} />
           </>
         )}
         {mode === 'resetPassword' && (
           <>
             <ResetPasswordFormFields
               inputStyles={inputStyles}
-              userTypesList={userTypesList}
+              roles={roles}
               register={register}
               errors={errors}
             />{' '}

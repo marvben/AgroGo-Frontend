@@ -1,5 +1,5 @@
-import AuthForm from '../components/Forms/AuthForm';
-import { useAuth } from '../context/useAuth';
+import AuthForm from '../components/Forms/AuthForm/AuthForm';
+import { useAuth } from '../context/AuthContext/useAuth';
 import { useEffect, useState } from 'react';
 import { Box, Snackbar, Alert } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -35,7 +35,9 @@ export default function ResetPasswordPage() {
       // Choose request based on requestType
       let ok;
       if (requestType === 'post') {
+        console.log(data);
         ok = await forgotPassword(data);
+
         setLoading(false);
         if (ok) navigate('/login');
       } else {

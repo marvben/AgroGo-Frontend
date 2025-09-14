@@ -1,5 +1,5 @@
 import { TextField, MenuItem } from '@mui/material';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../../context/AuthContext/useAuth';
 import { Link } from '@mui/material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ const ResetPassWordFields = ({
   errors,
 }) => {
   const location = useLocation();
-  const { setUserType, hashTokenExpired } = useAuth();
+  const { setRole, hashTokenExpired } = useAuth();
 
   return location.search ? (
     <>
@@ -73,11 +73,7 @@ const ResetPassWordFields = ({
         }}
       >
         {userTypesList.map((option, idx) => (
-          <MenuItem
-            key={idx}
-            value={option}
-            onClick={() => setUserType(option)}
-          >
+          <MenuItem key={idx} value={option} onClick={() => setRole(option)}>
             {option}
           </MenuItem>
         ))}

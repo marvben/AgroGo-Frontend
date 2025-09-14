@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../context/AuthContext/useAuth';
 
 export default function LogoutButton({ fullWidth = false }) {
   const { logout } = useAuth();
