@@ -1,9 +1,9 @@
 // context/Auth/AuthProvider.js
 import { useState, useEffect } from 'react';
 import { CartContext } from './CartContext';
-import Notification from '../../Uputilities/Notification';
+import Notification from '../../utils/Notification';
 import useSnackbar from '../../hooks/useSnackbar';
-import { getRemainingTime } from '../../Uputilities/TimeUtils';
+import { getRemainingTime } from '../../utils/TimeUtils';
 
 import {
   registerUser,
