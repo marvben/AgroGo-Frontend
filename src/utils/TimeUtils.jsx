@@ -1,4 +1,4 @@
-// utils/timeUtils.js
+// utils/timeutils.js
 const getRemainingTime = (expiresAt) => {
   const now = new Date();
   const exp = new Date(expiresAt);

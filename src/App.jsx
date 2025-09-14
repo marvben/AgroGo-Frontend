@@ -6,7 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashBoardPage from './pages/DashBoardPage';
 import VerificationPage from './pages/VerificationPage';
-import ProtectedRoute from './Utils/ProtectedRoute';
+import ProtectedRoute from './utils/ProtectedRoute';
 import Footer from './components/Footer/Footer';
 import ProductPage from './pages/ProductsPage';
 import NotFoundPage from './pages/NotFoundPage';

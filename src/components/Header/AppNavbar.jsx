@@ -15,9 +15,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext/useAuth';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
-import LogoutButton from '../../Utils/LogoutButton';
-import LoginLink from '../../Utils/LoginLink';
-import RegisterLink from '../../Utils/RegisterLink';
+import LogoutButton from '../../utils/LogoutButton';
+import LoginLink from '../../utils/LoginLink';
+import RegisterLink from '../../utils/RegisterLink';
 
 export default function AppNavbar() {
   const { user, userUrl, showHeader } = useAuth(); // { id, username, role } or null
