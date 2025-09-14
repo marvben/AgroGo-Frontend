@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { CartContext } from './CartContext';
 import Notification from '../../utils/Notification';
 import useSnackbar from '../../hooks/useSnackbar';
-import getRemainingTime from '../../utils/Timeutils';
+import getRemainingTime from '../../utils/getRemainingTime';
 
 import {
   registerUser,
