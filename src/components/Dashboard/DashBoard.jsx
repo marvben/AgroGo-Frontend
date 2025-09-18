@@ -11,7 +11,7 @@ import QuickActions from './QuickActions';
 import RecentActivity from './RecentActivity';
 import { useState, useEffect } from 'react';
 
-export default function DashboardBuyer({ user }) {
+export default function Dashboard({ user }) {
   const [profileImage, setProfileImage] = useState(
     user?.profileImage || 'https://i.pravatar.cc/40'
   );
