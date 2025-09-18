@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext/useAuth';
-import { useUI } from '../../context/UIContext/useUi';
+import { useUI } from '../../context/UIContext/useUI';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutButton from '../../utils/LogoutButton';
