@@ -1,10 +1,16 @@
 // src/components/AuthFormLayout.jsx
 import AddProductFormFields from './ProductFormFields';
 import { useForm } from 'react-hook-form';
-import { Box, Paper, Typography, Link } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Box, Paper, Typography, Button } from '@mui/material';
 import ButtonSubmit from '../AuthForm/ButtonSubmit';
 import { keyframes } from '@mui/system';
 import { useState } from 'react';
+import UploadWidget from '../../ImageUpload/UploadWidget/UploadWidget';
+import { useAuth } from '../../../context/AuthContext/useAuth';
+import { useUI } from '../../../context/UIContext/useUI';
+import ImagePreviewList from '../../ImagePreview/ImagePreviewList';
+import { deleteImageFromCloudinary } from '../../../services/imageService';
 
 export default function ProductForm({
   mode = 'create',
@@ -53,6 +59,23 @@ export default function ProductForm({
     formState: { errors },
   } = useForm();
 
+  const { user } = useAuth();
+  const { showSuccess, showError } = useUI();
+
+  const [images, setImages] = useState(
+    user?.images || [{ url: '', public_id: '' }]
+  );
+  const [uploadImageText, setUploadImageText] = useState(
+    'Upload product images'
+  );
+  const [showSubmitButton, setShowSubmitButton] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+
+  const handleRemove = async (public_id) => {
+    await deleteImageFromCloudinary(public_id);
+    setImages((prev) => prev.filter((img) => img.public_id !== public_id));
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box
@@ -90,9 +113,71 @@ export default function ProductForm({
             register={register}
             errors={errors}
           />
-          <ButtonSubmit text='Create Product' loading={loading} />
+
+          {images.length > 0 && showImagePreview && (
+            <ImagePreviewList images={images} onRemove={handleRemove} />
+          )}
+          <UploadWidget
+            folderName={`Products/${user?.username}_${user?.id}`}
+            multiple={true}
+            resourceType='image'
+            showUploadMoreButton={true}
+            singleUploadAutoClose={false}
+            onUpload={(error, result) => {
+              if (!error && result.event === 'success') {
+                const uploadedFile = {
+                  url: result.info.secure_url,
+                  public_id: result.info.public_id,
+                };
+
+                setImages((prev) => [
+                  ...prev,
+                  { url: uploadedFile.url, public_id: uploadedFile.public_id },
+                ]);
+                showSuccess('Image added successfully');
+                setUploadImageText('Upload more images');
+                setShowSubmitButton(true);
+                setShowImagePreview(true);
+              } else {
+                showError('Upload failed. Please try again.');
+              }
+            }}
+          >
+            {({ open }) => (
+              <Button
+                type='button'
+                onClick={() => {
+                  if (user) {
+                    open();
+                  } else {
+                    showError('You must be logged in to upload images');
+                  }
+                }}
+                variant='contained'
+                startIcon={<CloudUploadIcon />}
+                sx={{
+                  backgroundColor: '#1976d2',
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  px: 2.5,
+                  py: 1,
+                  fontWeight: 500,
+                  fontSize: '0.95rem',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                  '&:hover': {
+                    backgroundColor: '#1565c0',
+                  },
+                }}
+              >
+                {uploadImageText}
+              </Button>
+            )}
+          </UploadWidget>
+          {showSubmitButton && (
+            <ButtonSubmit text='Create Product' loading={loading} />
+          )}
         </Paper>
-      </Box>{' '}
+      </Box>
     </form>
   );
 }

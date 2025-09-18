@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 export default function EditProductPage() {
   const { login, user, userUrl } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
+
   const navigate = useNavigate();
 
   const handleLogin = async (data) => {
@@ -41,22 +41,6 @@ export default function EditProductPage() {
           title='Edith  product'
         />
       </div>
-
-      <Snackbar
-        open={snack.open}
-        autoHideDuration={4000}
-        onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          severity={snack.type}
-          variant='filled'
-          sx={{ width: '100%' }}
-        >
-          {snack.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

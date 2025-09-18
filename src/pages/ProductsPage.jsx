@@ -10,7 +10,6 @@ const ProductPage = () => (
       p: { xs: 1, sm: 2, md: 4 },
     }}
   >
-    {' '}
     <ProductsList
       title='Our Products'
       description='List of our all our products'

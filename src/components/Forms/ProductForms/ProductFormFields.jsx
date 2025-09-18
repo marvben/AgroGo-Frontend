@@ -1,6 +1,29 @@
 import { TextField, MenuItem } from '@mui/material';
 
 const ProductFormFields = ({ inputStyles, register, errors }) => {
+  const categories = [
+    'Fruits',
+    'Vegetables',
+    'Grains & Cereals',
+    'Legumes & Pulses',
+    'Tubers & Roots',
+    'Nuts & Seeds',
+    'Oil Crops',
+    'Livestock Products',
+    'Spices & Herbs',
+  ];
+  const tags = [
+    'Fresh',
+    'Organic',
+    'Dried',
+    'Processed',
+    'Seasonal',
+    'Imported',
+    'Local',
+    'Wholesale',
+    'Retail',
+  ];
+
   return (
     <>
       {/* Title */}
@@ -27,9 +50,9 @@ const ProductFormFields = ({ inputStyles, register, errors }) => {
         sx={inputStyles}
       />
 
-      {/* Description */}
+      {/*Full Description */}
       <TextField
-        label='Description'
+        label='Full Description'
         fullWidth
         multiline
         rows={4}
@@ -53,25 +76,57 @@ const ProductFormFields = ({ inputStyles, register, errors }) => {
 
       {/* Category */}
       <TextField
+        select
         label='Category'
         fullWidth
         margin='normal'
-        {...register('category', { required: 'Category is required' })}
+        {...register('category', {
+          required: 'Category is required',
+          validate: (value) => value !== 'none',
+        })}
         error={!!errors.category}
         helperText={errors.category?.message}
-        sx={inputStyles}
-      />
+        sx={{
+          ...inputStyles,
+          '& .MuiInputBase-root': {
+            backgroundColor: '#0f172a', // dark background
+          },
+        }}
+      >
+        <MenuItem value='none'>Please select product category</MenuItem>
+        {categories.map((category, idx) => (
+          <MenuItem key={idx} value={category}>
+            {category}
+          </MenuItem>
+        ))}
+      </TextField>
 
       {/* Tag */}
       <TextField
+        select
         label='Tag'
         fullWidth
         margin='normal'
-        {...register('tag', { required: 'Tag is required' })}
+        {...register('tag', {
+          required: 'Tag is required',
+          validate: (value) => value !== 'none',
+        })}
         error={!!errors.tag}
         helperText={errors.tag?.message}
-        sx={inputStyles}
-      />
+        sx={{
+          ...inputStyles,
+          '& .MuiInputBase-root': {
+            backgroundColor: '#0f172a', // dark background
+          },
+        }}
+      >
+        <MenuItem value='none'>Please select product tag</MenuItem>
+        {tags.map((tag, idx) => (
+          <MenuItem key={idx} value={tag}>
+            {tag}
+          </MenuItem>
+        ))}
+      </TextField>
 
       {/* Price */}
       <TextField
@@ -102,17 +157,6 @@ const ProductFormFields = ({ inputStyles, register, errors }) => {
         })}
         error={!!errors.stock}
         helperText={errors.stock?.message}
-        sx={inputStyles}
-      />
-
-      {/* Owner (Farmer ID) */}
-      <TextField
-        label='Owner (Farmer ID)'
-        fullWidth
-        margin='normal'
-        {...register('owner', { required: 'Owner ID is required' })}
-        error={!!errors.owner}
-        helperText={errors.owner?.message}
         sx={inputStyles}
       />
     </>

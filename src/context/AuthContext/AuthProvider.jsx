@@ -1,8 +1,7 @@
-// context/Auth/AuthProvider.js
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
-import Notification from '../../utils/Notification';
-import useSnackbar from '../../hooks/useSnackbar';
+import { useUI } from '../UIContext/useUI';
 import getRemainingTime from '../../utils/getRemainingTime';
 
 import {
@@ -13,11 +12,16 @@ import {
   forgotPassword as forgotPasswordService,
   resetPassword as resetPasswordService,
   checkUrlValidity as checkUrlValidityService,
-  uploadProfileImage as uploadProfileImageService,
   getProfile,
 } from '../../services/authService';
 
+import {
+  uploadProfileImage as uploadProfileImageService,
+  deleteProfileImage as deleteProfileImageService,
+} from '../../services/imageService.js';
+
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [role, setRole] = useState('customer');
   const [loading, setLoading] = useState(true);
@@ -28,16 +32,13 @@ export const AuthProvider = ({ children }) => {
   const [requiredRole, setRequiredRole] = useState(false);
   const [userHasRole, setUserHasRole] = useState(false);
 
-  const [showHeader, setShowHeader] = useState(true);
-  const [showFooter, setShowFooter] = useState(true);
-
   const [hashTokenExpired, setHashTokenExpired] = useState(false);
 
-  const { snack, setSnack, showSuccess, showError } = useSnackbar();
+  const { showSuccess, showError } = useUI();
 
   // Load user profile on mount
   useEffect(() => {
-    (async () => {
+    const storedUser = async () => {
       try {
         const res = await getProfile();
         if (res.data) {
@@ -50,7 +51,10 @@ export const AuthProvider = ({ children }) => {
       } finally {
         setLoading(false);
       }
-    })();
+    };
+
+    storedUser();
+    return () => setUser(null);
   }, []);
 
   // Auth actions
@@ -94,10 +98,14 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      logoutUser();
-      setUser(null);
-      setIsAuthenticated(false);
-      showSuccess('Logged out successfully!');
+      const result = await logoutUser();
+      if (result?.data?.success) {
+        navigate('/');
+        setUser(null);
+        setIsAuthenticated(false);
+        showSuccess('Logged out successfully!');
+      }
+
       return true;
     } catch {
       showError('Logout failed');
@@ -161,16 +169,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const uploadImageToCloudinary = async (data, method) => {
-    if (!data.image?.[0]) {
-      showError('No image selected');
-      return null;
-    }
-    const formData = new FormData();
-    formData.append('profileImage', data.image[0]);
-
+  const uploadProfileImage = async (data) => {
     try {
-      const result = await uploadProfileImageService(formData, method);
+      const result = await uploadProfileImageService(data);
       showSuccess('Upload successful');
       return result.data;
     } catch (err) {
@@ -180,6 +181,17 @@ export const AuthProvider = ({ children }) => {
           err.message ||
           'Something went wrong, image not uploaded'
       );
+      return null;
+    }
+  };
+
+  const deleteProfileImage = async () => {
+    try {
+      const result = await deleteProfileImageService();
+      showSuccess('Image deleted successfully');
+      return result.data.success;
+    } catch (err) {
+      showError('Something went wrong, image not deleted');
       return null;
     }
   };
@@ -204,7 +216,8 @@ export const AuthProvider = ({ children }) => {
         forgotPassword,
         resetPassword,
         checkUrlValidity,
-        uploadImageToCloudinary,
+        uploadProfileImage,
+        deleteProfileImage,
         resetExpireTime,
         userUrl,
         setUserUrl,
@@ -216,17 +229,135 @@ export const AuthProvider = ({ children }) => {
         setRequiredRole,
         userHasRole,
         setUserHasRole,
-        showHeader,
-        setShowHeader,
-        showFooter,
-        setShowFooter,
         hashTokenExpired,
         setHashTokenExpired,
         loading,
       }}
     >
       {children}
-      <Notification snack={snack} setSnack={setSnack} />
     </AuthContext.Provider>
   );
 };
+
+///////////////////////////////////////////////////////////////
+
+//   // Load user profile on mount
+//   useEffect(() => {
+//     const checkSession = async () => {
+//       try {
+//         const res = await getProfile();
+//         if (res.data) {
+//           setUser(res.data);
+//           setIsAuthenticated(true);
+//         }
+//       } catch {
+//         setUser(null);
+//         setIsAuthenticated(false);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     checkSession();
+//   }, []);
+
+//   // Auth actions
+//   const login = async (data) => {
+//     const { data: result } = await loginUser(data);
+//     if (result?.user) {
+//       setUser(result.user);
+//       setIsAuthenticated(true);
+//       return result.user;
+//     }
+//     return null;
+//   };
+
+//   const register = async (data) => {
+//     const { data: result } = await registerUser(data);
+//     if (result?.user) {
+//       setUser(result.user);
+//       setIsAuthenticated(true);
+//       return result.user;
+//     }
+//     return null;
+//   };
+
+//   const logout = async () => {
+//     await logoutUser();
+//     setUser(null);
+//     setIsAuthenticated(false);
+//   };
+
+//   const deleteUser = async () => {
+//     await deleteUserService();
+//     setUser(null);
+//     setIsAuthenticated(false);
+//   };
+
+//   const forgotPassword = async (data) => {
+//     await forgotPasswordService(data);
+//     setHashTokenExpired(false);
+//   };
+
+//   const resetPassword = async (data, params) => {
+//     const { data: result } = await resetPasswordService(params, data);
+//     if (result.success) return true;
+//     return false;
+//   };
+
+//   const checkUrlValidity = async (params) => {
+//     const { data } = await checkUrlValidityService(params);
+//     if (data.expired) {
+//       return false;
+//     }
+//     return true;
+//   };
+
+//   const uploadImageToCloudinary = async (data, method) => {
+//     if (!data.image?.[0]) return null;
+//     const formData = new FormData();
+//     formData.append('profileImage', data.image[0]);
+//     const result = await uploadProfileImageService(formData, method);
+//     return result.data;
+//   };
+
+//   const resetExpireTime = () => {
+//     if (user?.verificationCodeExpires) {
+//       return getRemainingTime(user.verificationCodeExpires);
+//     }
+//     return null;
+//   };
+
+//   return (
+//     <AuthContext.Provider
+//       value={{
+//         user,
+//         login,
+//         register,
+//         logout,
+//         deleteUser,
+//         forgotPassword,
+//         resetPassword,
+//         checkUrlValidity,
+//         uploadImageToCloudinary,
+//         resetExpireTime,
+//         userUrl,
+//         setUserUrl,
+//         role,
+//         setRole,
+//         isAuthenticated,
+//         setIsAuthenticated,
+//         requiredRole,
+//         setRequiredRole,
+//         userHasRole,
+//         setUserHasRole,
+//         hashTokenExpired,
+//         setHashTokenExpired,
+//         loading,
+//       }}
+//     >
+//       {children}
+//       <Notification snack={snack} setSnack={setSnack} />
+//     </AuthContext.Provider>
+//   );
+// };

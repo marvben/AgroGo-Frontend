@@ -1,10 +1,9 @@
-// context/Auth/AuthProvider.js
+// context/Auth/ProductProvider.js
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProductContext } from './ProductContext';
 import Notification from '../../utils/Notification';
 import useSnackbar from '../../hooks/useSnackbar';
-
 import {
   fetchManyProducts,
   fetchProduct,
@@ -12,11 +11,11 @@ import {
   updateProduct,
   deleteProduct,
   deleteManyProducts,
-} from '../../services/authService';
+} from '../../services/productService';
 
-export const AuthProvider = ({ children }) => {
-  const { productId } = useParams();
+export const ProductProvider = ({ children }) => {
   const { snack, setSnack, showSuccess, showError } = useSnackbar();
+  const [loading, setLoading] = useState(false);
 
   // Product actions
   const getManyProducts = async (params) => {
@@ -32,7 +31,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  const getProduct = async () => {
+  const getProduct = async (productId) => {
     try {
       const { data: result } = await fetchProduct(productId);
       if (result?.success) return result.product;
@@ -47,15 +46,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const addProduct = async (data) => {
-    if (!data.image?.[0]) {
-      showError('No image selected');
-      return null;
-    }
-    const formData = new FormData();
-    formData.append('productImage', data.image[0]);
-
     try {
-      const { data: result } = await createProduct(data, formData);
+      const { data: result } = await createProduct(data);
       if (result?.success) {
         showSuccess(`New Product created`);
         return true;
@@ -78,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     formData.append('productImage', data.image[0]);
 
     try {
-      const { data: result } = await updateProduct(productId, data, formData);
+      const { data: result } = await updateProduct(formData);
       if (result?.success) {
         showSuccess(`Update successful`);
         return true;
@@ -91,7 +83,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  const removeProduct = async () => {
+  const removeProduct = async (productId) => {
     try {
       const { data: result } = await deleteProduct(productId);
       if (result?.success) {
@@ -124,8 +116,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider
+    <ProductContext.Provider
       value={{
+        loading,
         getManyProducts,
         getProduct,
         addProduct,
@@ -136,6 +129,6 @@ export const AuthProvider = ({ children }) => {
     >
       {children}
       <Notification snack={snack} setSnack={setSnack} />
-    </AuthContext.Provider>
+    </ProductContext.Provider>
   );
 };

@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext/useAuth';
+import { useUI } from '../../context/UIContext/useUi';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutButton from '../../utils/LogoutButton';
@@ -20,7 +21,8 @@ import LoginLink from '../../utils/LoginLink';
 import RegisterLink from '../../utils/RegisterLink';
 
 export default function AppNavbar() {
-  const { user, userUrl, showHeader } = useAuth(); // { id, username, role } or null
+  const { user, userUrl } = useAuth(); // { id, username, role } or null
+  const { showHeader } = useUI();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
@@ -65,25 +67,6 @@ export default function AppNavbar() {
           <Button component={RouterLink} to='/products' sx={{ color: 'white' }}>
             Products
           </Button>
-
-          {user?.role === 'farmer' && (
-            <>
-              <Button
-                component={RouterLink}
-                to='/create-product'
-                sx={{ color: 'white' }}
-              >
-                Create product
-              </Button>
-              <Button
-                component={RouterLink}
-                to={userUrl}
-                sx={{ color: 'white', textTransform: 'capitalize' }}
-              >
-                Manage my products
-              </Button>
-            </>
-          )}
         </Stack>
 
         {/* Auth Section */}
@@ -107,9 +90,11 @@ export default function AppNavbar() {
                 variant='body2'
                 sx={{ color: 'white' }}
               >
-                {user.username} ({user.role})
+                Dashboard
               </Typography>
-              <LogoutButton />
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <LogoutButton />
+              </Box>
             </Stack>
           ) : (
             <Stack direction='row' spacing={1}>
@@ -141,16 +126,20 @@ export default function AppNavbar() {
               >
                 Products
               </MenuItem>
+
               <Divider sx={{ backgroundColor: '#475569' }} />
               {user && (
-                <MenuItem
-                  component={RouterLink}
-                  to={`${userUrl}`}
-                  onClick={handleMenuClose}
-                  sx={{ textTransform: 'capitalize' }}
-                >
-                  {user.role} Dashboard
-                </MenuItem>
+                <Box>
+                  <MenuItem
+                    component={RouterLink}
+                    to={`${userUrl}`}
+                    onClick={handleMenuClose}
+                    sx={{ textTransform: 'capitalize' }}
+                  >
+                    My Dashboard
+                  </MenuItem>
+                  <MenuItem component={LogoutButton} />
+                </Box>
               )}
             </Menu>
           </Box>

@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const NotAuthorizedPage = () => {
+const NotAuthorizedPage = ({
+  description = 'You must be signed in to access this page.',
+}) => {
   const navigate = useNavigate();
+  const [showButtons, setShowButtons] = useState(false);
 
   return (
     <Box
@@ -18,26 +21,28 @@ const NotAuthorizedPage = () => {
         🚫 Not Authorized
       </Typography>
       <Typography variant='body1' gutterBottom>
-        You must be signed in to access this page.
+        {description}
       </Typography>
 
-      <Box mt={3}>
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={() => navigate('/login')}
-          sx={{ mr: 2 }}
-        >
-          Sign In
-        </Button>
-        <Button
-          variant='outlined'
-          color='secondary'
-          onClick={() => navigate('/')}
-        >
-          Go Home
-        </Button>
-      </Box>
+      {showButtons && (
+        <Box mt={3}>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={() => navigate('/login')}
+            sx={{ mr: 2 }}
+          >
+            Sign In
+          </Button>
+          <Button
+            variant='outlined'
+            color='secondary'
+            onClick={() => navigate('/')}
+          >
+            Go Home
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

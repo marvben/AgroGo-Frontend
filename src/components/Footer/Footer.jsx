@@ -21,7 +21,7 @@ const Footer = () => {
       <Container maxWidth='lg'>
         <Grid container spacing={4} justifyContent='space-between'>
           {/* Brand Section */}
-          <Grid item xs={12} sm={4}>
+          <Grid>
             <Typography variant='h6' sx={{ fontWeight: 'bold', mb: 1 }}>
               🌱 AgroGo
             </Typography>
@@ -31,7 +31,7 @@ const Footer = () => {
           </Grid>
 
           {/* Quick Links */}
-          <Grid item xs={12} sm={4}>
+          <Grid>
             <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mb: 1 }}>
               Quick Links
             </Typography>
@@ -55,7 +55,7 @@ const Footer = () => {
           </Grid>
 
           {/* Social Media */}
-          <Grid item xs={12} sm={4}>
+          <Grid>
             <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mb: 1 }}>
               Follow Us
             </Typography>

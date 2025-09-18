@@ -5,12 +5,12 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 const ResetPassWordFields = ({
   inputStyles,
-  userTypesList,
+
   register,
   errors,
 }) => {
   const location = useLocation();
-  const { setRole, hashTokenExpired } = useAuth();
+  const { hashTokenExpired } = useAuth();
 
   return location.search ? (
     <>
@@ -54,30 +54,6 @@ const ResetPassWordFields = ({
         helperText={errors.email?.message}
         sx={inputStyles}
       />
-
-      {/* Role */}
-      <TextField
-        select
-        label='Account Type'
-        defaultValue='buyer'
-        fullWidth
-        margin='normal'
-        {...register('userType', { required: 'Account type is required' })}
-        error={!!errors.userType}
-        helperText={errors.userType?.message}
-        sx={{
-          ...inputStyles,
-          '& .MuiInputBase-root': {
-            backgroundColor: '#0f172a', // makes the select field white
-          },
-        }}
-      >
-        {userTypesList.map((option, idx) => (
-          <MenuItem key={idx} value={option} onClick={() => setRole(option)}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField>
     </>
   );
 };

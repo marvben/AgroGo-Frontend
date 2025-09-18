@@ -23,7 +23,6 @@ import { useAuth } from '../context/AuthContext/useAuth';
 export default function VerifyCode() {
   const { user, resetExpireTime, role, userUrl, expireTime } = useAuth(); // Assuming user is fetched from context
   const [showCode, setShowCode] = useState(false);
-  const [snack, setSnack] = useState({ open: false, type: 'success', msg: '' });
   const [pageTitle, setPageTitle] = useState('Verify Code');
   const {
     control,
@@ -243,22 +242,6 @@ export default function VerifyCode() {
           </CardContent>
         </Card>
       </Box>
-
-      <Snackbar
-        open={snack.open}
-        autoHideDuration={4000}
-        onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          severity={snack.type}
-          variant='filled'
-          sx={{ width: '100%' }}
-        >
-          {snack.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

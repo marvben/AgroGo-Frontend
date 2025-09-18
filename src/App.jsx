@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashBoardPage from './pages/DashBoardPage';
 import VerificationPage from './pages/VerificationPage';
 import ProtectedRoute from './utils/ProtectedRoute';
+import FarmerOnlyRoute from './utils/FarmerOnlyRoute';
 import Footer from './components/Footer/Footer';
 import ProductPage from './pages/ProductsPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -14,6 +15,7 @@ import NotAuthorizedPage from './pages/NotAuthorizedPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import CreateProductPage from './pages/CreateProductPage';
 import EditProductPage from './pages/EditProductPage';
+import MyProductsPage from './pages/MyProductsPage';
 function App() {
   const { userUrl } = useAuth();
 
@@ -28,14 +30,21 @@ function App() {
         <Route path='/products' element={<ProductPage />} />
         <Route path='/product/:productId' element={<ProductPage />} />
 
-        <Route path={'/create-product'} element={<CreateProductPage />} />
+        <Route
+          path={'/create-product'}
+          element={
+            <FarmerOnlyRoute>
+              <CreateProductPage />
+            </FarmerOnlyRoute>
+          }
+        />
 
         <Route
           path={'/edit-product/:productId'}
           element={
-            <ProtectedRoute>
+            <FarmerOnlyRoute>
               <EditProductPage />
-            </ProtectedRoute>
+            </FarmerOnlyRoute>
           }
         />
 
@@ -56,8 +65,20 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path='/not-authorized' element={<NotAuthorizedPage />} />
+        <Route
+          path='/not-authorized'
+          element={<NotAuthorizedPage description='Only For Farmers' />}
+        />
         <Route path='*' element={<NotFoundPage />} />
+
+        <Route
+          path='/my-products'
+          element={
+            <FarmerOnlyRoute>
+              <MyProductsPage />
+            </FarmerOnlyRoute>
+          }
+        ></Route>
       </Routes>
       <Footer />
     </>
