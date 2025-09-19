@@ -121,7 +121,7 @@ export default function QuickActions({ user }) {
         <Button
           component={RouterLink}
           to='/reset-password'
-          variant='outlined'
+          variant='contained'
           fullWidth
           sx={buttonStyles}
         >

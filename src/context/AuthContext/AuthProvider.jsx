@@ -109,6 +109,7 @@ export const AuthProvider = ({ children }) => {
       return true;
     } catch {
       showError('Logout failed');
+      window.location.href = '/dashboard';
       return false;
     }
   };

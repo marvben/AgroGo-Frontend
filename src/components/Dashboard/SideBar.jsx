@@ -1,4 +1,8 @@
 import { Link as RouterLink, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 import { useAuth } from '../../context/AuthContext/useAuth';
 import {
   Toolbar,
@@ -11,6 +15,7 @@ import {
   Box,
   Divider,
 } from '@mui/material';
+
 import {
   AccountCircle,
   Settings,
@@ -27,63 +32,98 @@ const slideRight = keyframes`
 
 export default function SideBar() {
   const { logout } = useAuth();
+  const [open, setOpen] = useState(false);
+
+  const toggleDrawer = () => {
+    setOpen((prev) => !prev);
+  };
   return (
-    <Drawer
+    <Box
       sx={{
-        animation: `${slideRight} 0.6s ease-out`,
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
+        display: { xs: 'none', md: 'flex' },
+
+        flexShrink: { md: 0 },
+      }}
+    >
+      {/* Top Bar with Button */}
+      <Toolbar
+        sx={{
           backgroundColor: '#1e293b',
           color: 'white',
-        },
-      }}
-      variant='permanent'
-      anchor='left'
-    >
-      <Toolbar>
-        <Typography variant='h6' noWrap sx={{ fontWeight: 'bold' }}>
-          My Dashboard
-        </Typography>
-      </Toolbar>
-      <Divider sx={{ backgroundColor: '#475569' }} />
-      <List>
-        {[
-          { text: 'Overview', icon: <Dashboard /> },
-          { text: 'Account', icon: <AccountCircle /> },
-          { text: 'Settings', icon: <Settings /> },
-        ].map((item, index) => (
-          <ListItem button key={index}>
-            <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
-      </List>
-      <Box sx={{ flexGrow: 1 }} />
-      <List
-        sx={{
-          mb: 2,
-          backgroundColor: '#fff',
-          color: '#475569',
-          borderRadius: 3,
-          mx: 2,
-          '&:hover': {
-            backgroundColor: '#475569',
-            color: '#fff',
-            cursor: 'pointer',
-          },
-          '&:hover .child': { color: '#fff' },
+          width: 'auto',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          py: 3,
+          animation: `${slideRight} 0.6s ease-out`,
+          height: '100%',
+          minHeight: '100vh !important',
         }}
       >
-        <ListItem button onClick={logout}>
-          <ListItemIcon className='child' sx={{ color: '#475569' }}>
-            <Logout />
-          </ListItemIcon>
-          <ListItemText primary='Logout' />
-        </ListItem>
-      </List>
-    </Drawer>
+        <IconButton
+          onClick={toggleDrawer}
+          sx={{ color: 'white', mr: 2 }}
+          edge='start'
+        >
+          {open ? <CloseIcon /> : <MenuIcon />}
+        </IconButton>
+      </Toolbar>
+      <Drawer
+        anchor='left'
+        open={open}
+        onClose={toggleDrawer}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            backgroundColor: '#1e293b',
+            color: 'white',
+            transition: 'all 0.3s ease-in-out',
+          },
+        }}
+      >
+        <Toolbar>
+          <Typography variant='h6' noWrap sx={{ fontWeight: 'bold' }}>
+            My Dashboard
+          </Typography>
+        </Toolbar>
+        <Divider sx={{ backgroundColor: '#475569' }} />
+        <List>
+          {[
+            { text: 'Overview', icon: <Dashboard /> },
+            { text: 'Account', icon: <AccountCircle /> },
+            { text: 'Settings', icon: <Settings /> },
+          ].map((item, index) => (
+            <ListItem button key={index}>
+              <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItem>
+          ))}
+        </List>
+        <Box sx={{ flexGrow: 1 }} />
+        <List
+          sx={{
+            mb: 2,
+            backgroundColor: '#fff',
+            color: '#475569',
+            borderRadius: 3,
+            mx: 2,
+            '&:hover': {
+              backgroundColor: '#475569',
+              color: '#fff',
+              cursor: 'pointer',
+            },
+            '&:hover .child': { color: '#fff' },
+          }}
+        >
+          <ListItem button onClick={logout}>
+            <ListItemIcon className='child' sx={{ color: '#475569' }}>
+              <Logout />
+            </ListItemIcon>
+            <ListItemText primary='Logout' />
+          </ListItem>
+        </List>
+      </Drawer>
+    </Box>
   );
 }
