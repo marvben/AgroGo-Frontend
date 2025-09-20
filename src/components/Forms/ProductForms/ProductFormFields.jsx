@@ -63,17 +63,6 @@ const ProductFormFields = ({ inputStyles, register, errors }) => {
         sx={inputStyles}
       />
 
-      {/* Image (URL or file) */}
-      <TextField
-        label='Image URL'
-        fullWidth
-        margin='normal'
-        {...register('image', { required: 'Image is required' })}
-        error={!!errors.image}
-        helperText={errors.image?.message}
-        sx={inputStyles}
-      />
-
       {/* Category */}
       <TextField
         select

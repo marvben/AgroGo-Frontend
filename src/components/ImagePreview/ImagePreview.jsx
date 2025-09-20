@@ -2,20 +2,38 @@ import { Box, IconButton, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useState } from 'react';
 import { useUI } from '../../context/UIContext/useUI';
+import { deleteImageFromCloudinary } from '../../services/imageService.js';
 
 const ImagePreview = ({ url, public_id, index, onRemove }) => {
-  const { showError } = useUI();
+  const { showError, showSuccess } = useUI();
   const [deletingIds, setDeletingIds] = useState([]);
   const handleDelete = async (public_id) => {
     try {
-      setDeletingIds((prev) => [...prev, public_id]);
-      await onRemove(public_id);
-      setDeletingIds((prev) => prev.filter((id) => id !== public_id));
+      const res = await deleteImageFromCloudinary(public_id);
+      if (res.data) {
+        setDeletingIds((prev) => [...prev, public_id]);
+        showSuccess('Image removed successfully');
+        await onRemove(public_id);
+        setDeletingIds((prev) => prev.filter((id) => id !== public_id));
+      }
     } catch (error) {
+      console.log(error);
       showError(error?.response?.data?.message || 'Failed to delete image');
       setDeletingIds((prev) => prev.filter((id) => id !== public_id));
     }
   };
+
+  // const handleDelete = async (public_id) => {
+  //   try {
+  //     setDeletingIds((prev) => [...prev, public_id]);
+  //     await onRemove(public_id);
+  //     setDeletingIds((prev) => prev.filter((id) => id !== public_id));
+  //   } catch (error) {
+  //     console.log(error);
+  //     showError(error?.response?.data?.message || 'Failed to delete image');
+  //     setDeletingIds((prev) => prev.filter((id) => id !== public_id));
+  //   }
+  // };
   return (
     <Box
       sx={{

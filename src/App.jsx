@@ -6,7 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashBoardPage from './pages/DashBoardPage';
 import VerificationPage from './pages/VerificationPage';
-import ProtectedRoute from './utils/ProtectedRoute';
+import RoleRoute from './utils/RoleRoute';
 import FarmerOnlyRoute from './utils/FarmerOnlyRoute';
 import Footer from './components/Footer/Footer';
 import ProductPage from './pages/ProductsPage';
@@ -51,32 +51,36 @@ function App() {
         <Route
           path={userUrl}
           element={
-            <ProtectedRoute>
+            <RoleRoute allow={['viewer', 'customer', 'farmer', 'admin']}>
               <DashBoardPage />
-            </ProtectedRoute>
+            </RoleRoute>
           }
         />
 
         <Route
           path='/verify'
           element={
-            <ProtectedRoute>
+            <RoleRoute allow={['viewer', 'customer', 'farmer', 'admin']}>
               <VerificationPage />
-            </ProtectedRoute>
+            </RoleRoute>
           }
         />
         <Route
           path='/not-authorized'
-          element={<NotAuthorizedPage description='Only For Farmers' />}
+          element={
+            <RoleRoute allow={['viewer', 'customer', 'farmer', 'admin']}>
+              <NotAuthorizedPage description='Only For Farmers' />
+            </RoleRoute>
+          }
         />
         <Route path='*' element={<NotFoundPage />} />
 
         <Route
           path='/my-products'
           element={
-            <FarmerOnlyRoute>
+            <RoleRoute allow={['farmer']}>
               <MyProductsPage />
-            </FarmerOnlyRoute>
+            </RoleRoute>
           }
         ></Route>
       </Routes>

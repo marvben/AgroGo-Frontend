@@ -9,14 +9,22 @@ export default function CreateProductPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleCreateProduct = async (data) => {
+  const handleCreateProduct = async (data, productImages) => {
+    const productFullData = {
+      ...data,
+      images: productImages.filter(
+        (productImage) => productImage.secure_url && productImage.public_id
+      ),
+    };
     setLoading(true);
     console.log(data);
-    // const ok = await addProduct(data); // expect login() returns user
-    // setLoading(false);
-    // if (ok) {
-    //   navigate('/my-products');
-    // }
+    console.log(productImages);
+    console.log(productFullData);
+    const ok = await addProduct(productFullData);
+    setLoading(false);
+    if (ok) {
+      navigate('/my-products');
+    }
   };
 
   return (

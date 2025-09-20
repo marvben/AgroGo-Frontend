@@ -1,17 +1,6 @@
 import { AppBar, Toolbar, Typography, Avatar } from '@mui/material';
-import { useState, useEffect } from 'react';
 
 const TopBar = ({ user, newProfileImage }) => {
-  const [profileImage, setProfileImage] = useState(
-    user?.profileImage?.secure_url ||
-      newProfileImage ||
-      'https://i.pravatar.cc/40'
-  );
-
-  useEffect(() => {
-    setProfileImage(newProfileImage || 'https://i.pravatar.cc/40');
-  }, [newProfileImage]);
-
   return (
     <AppBar
       position='static'
@@ -25,7 +14,10 @@ const TopBar = ({ user, newProfileImage }) => {
         >
           Welcome Back, {user?.name || 'User'}!
         </Typography>
-        <Avatar alt={user?.name} src={profileImage} />
+        <Avatar
+          alt={user?.name}
+          src={newProfileImage || 'https://i.pravatar.cc/40'}
+        />
       </Toolbar>
     </AppBar>
   );

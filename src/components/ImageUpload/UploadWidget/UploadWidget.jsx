@@ -7,6 +7,7 @@ const UploadWidget = ({
   onUpload,
   folderName,
   resourceType = 'auto',
+  maxFiles = 1,
   multiple = false,
   showUploadMoreButton = false,
   singleUploadAutoClose = true,
@@ -73,6 +74,7 @@ const UploadWidget = ({
         'avi',
         'mkv',
       ],
+      maxFiles,
       maxImageFileSize: 0.5 * 1024 * 1024, // 500KB
       maxVideoFileSize: 5 * 1024 * 1024, // 5MB
       maxFileSize: 0.2 * 1024 * 1024, // 200KB PDFs/raw

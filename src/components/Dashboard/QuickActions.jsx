@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext/useAuth';
 import { useState, useEffect } from 'react';
 import { Typography, Card, CardContent, Button, Avatar } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import ImagePreview from '../ImagePreview/ImagePreview';
+import ProfileImage from './ProfileImage';
 import { deleteImageFromCloudinary } from '../../services/imageService';
 
 export default function QuickActions({ user, sendNewProfileImage }) {
@@ -70,7 +70,7 @@ export default function QuickActions({ user, sendNewProfileImage }) {
           Quick Actions
         </Typography>
         {!showUploadWidget ? (
-          <ImagePreview
+          <ProfileImage
             url={image.secure_url || 'https://i.pravatar.cc/40'}
             public_id={image.public_id}
             onRemove={handleRemove}
@@ -91,7 +91,7 @@ export default function QuickActions({ user, sendNewProfileImage }) {
                   setImage(res.profileImage);
                   showSuccess('Image added successfully');
                   setShowUploadWidget(false);
-                  sendNewProfileImage(res.profileImage.secure_url);
+                  await sendNewProfileImage(res.profileImage.secure_url);
                 }
               } else {
                 showError('Upload failed. Please try again.');

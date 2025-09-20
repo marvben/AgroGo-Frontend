@@ -10,7 +10,9 @@ import QuickActions from './QuickActions';
 import RecentActivity from './RecentActivity';
 
 export default function Dashboard({ user }) {
-  const [newProfileImage, setNewProfileImage] = useState('');
+  const [newProfileImage, setNewProfileImage] = useState(
+    user?.profileImage?.secure_url
+  );
   const fadeUp = keyframes`
       0% { opacity: 0; transform: translateY(20px); }
       100% { opacity: 1; transform: translateY(0); }

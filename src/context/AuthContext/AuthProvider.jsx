@@ -42,7 +42,8 @@ export const AuthProvider = ({ children }) => {
     const storedUser = async () => {
       try {
         const res = await getProfile();
-        console.log(res);
+        setLoading(false);
+
         if (res.data) {
           setUser(res.data);
           setIsAuthenticated(true);

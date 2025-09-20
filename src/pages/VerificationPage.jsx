@@ -15,11 +15,18 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
+import Loader from '../utils/Loader';
 import { useAuth } from '../context/AuthContext/useAuth';
 
 export default function VerifyCode() {
-  const { user, role, userUrl, verifyEmail, getEmailNewVerificationCode } =
-    useAuth(); // Assuming user is fetched from context
+  const {
+    user,
+    role,
+    userUrl,
+    verifyEmail,
+    getEmailNewVerificationCode,
+    loading,
+  } = useAuth(); // Assuming user is fetched from context
   const [showCode, setShowCode] = useState(false);
   const [pageTitle, setPageTitle] = useState('Verify Code');
 
@@ -33,6 +40,8 @@ export default function VerifyCode() {
   });
 
   const navigate = useNavigate();
+
+  if (loading) return <Loader />;
 
   if (user?.isEmailVerified) {
     return <Navigate to={userUrl} replace />;

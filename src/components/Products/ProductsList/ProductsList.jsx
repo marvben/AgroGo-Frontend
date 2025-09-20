@@ -2,6 +2,8 @@ import ProductCard from '../ProductCard/ProductCard';
 import { Box, Container, Typography } from '@mui/material';
 import dummyProducts from '../../../data/products'; // Assuming you have a products data file
 import { keyframes } from '@mui/system';
+import Loader from '../../../utils/Loader';
+import { useAuth } from '../../../context/AuthContext/useAuth.jsx';
 
 const ProductsList = ({
   products = dummyProducts,
@@ -12,6 +14,10 @@ const ProductsList = ({
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
   `;
+  const { loading } = useAuth();
+  if (loading) {
+    return <Loader />;
+  }
 
   if (!products || products.length === 0) {
     return (

@@ -63,7 +63,7 @@ export default function ProductForm({
   const { showSuccess, showError } = useUI();
 
   const [images, setImages] = useState(
-    user?.images || [{ url: '', public_id: '' }]
+    user?.images || [{ secure_url: '', public_id: '' }]
   );
   const [uploadImageText, setUploadImageText] = useState(
     'Upload product images'
@@ -77,7 +77,7 @@ export default function ProductForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit((data) => onSubmit(data, images))}>
       <Box
         display='flex'
         justifyContent='center'
@@ -117,62 +117,68 @@ export default function ProductForm({
           {images.length > 0 && showImagePreview && (
             <ImagePreviewList images={images} onRemove={handleRemove} />
           )}
-          <UploadWidget
-            folderName={`Products/${user?.username}_${user?.id}`}
-            multiple={true}
-            resourceType='image'
-            showUploadMoreButton={true}
-            singleUploadAutoClose={false}
-            onUpload={(error, result) => {
-              if (!error && result.event === 'success') {
-                const uploadedFile = {
-                  url: result.info.secure_url,
-                  public_id: result.info.public_id,
-                };
+          {images.length <= 5 && (
+            <UploadWidget
+              folderName={`Products/${user?.username}_${user?.id}`}
+              multiple={true}
+              maxFiles={5}
+              resourceType='image'
+              showUploadMoreButton={true}
+              singleUploadAutoClose={false}
+              onUpload={(error, result) => {
+                if (!error && result.event === 'success') {
+                  const uploadedFile = {
+                    secure_url: result.info.secure_url,
+                    public_id: result.info.public_id,
+                  };
 
-                setImages((prev) => [
-                  ...prev,
-                  { url: uploadedFile.url, public_id: uploadedFile.public_id },
-                ]);
-                showSuccess('Image added successfully');
-                setUploadImageText('Upload more images');
-                setShowSubmitButton(true);
-                setShowImagePreview(true);
-              } else {
-                showError('Upload failed. Please try again.');
-              }
-            }}
-          >
-            {({ open }) => (
-              <Button
-                type='button'
-                onClick={() => {
-                  if (user) {
-                    open();
-                  } else {
-                    showError('You must be logged in to upload images');
-                  }
-                }}
-                variant='contained'
-                startIcon={<CloudUploadIcon />}
-                sx={{
-                  backgroundColor: '#1976d2',
-                  textTransform: 'none',
-                  borderRadius: 2,
-                  px: 2.5,
-                  py: 1,
-                  fontWeight: 500,
-                  fontSize: '0.95rem',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-                  '&:hover': {
-                    backgroundColor: '#1565c0',
-                  },
-                }}
-              >
-                {uploadImageText}
-              </Button>
-            )}
-          </UploadWidget>
+                  setImages((prev) => [
+                    ...prev,
+                    {
+                      secure_url: uploadedFile.secure_url,
+                      public_id: uploadedFile.public_id,
+                    },
+                  ]);
+                  showSuccess('Image added successfully');
+                  setUploadImageText('Upload more images');
+                  setShowSubmitButton(true);
+                  setShowImagePreview(true);
+                } else {
+                  showError('Upload failed. Please try again.');
+                }
+              }}
+            >
+              {({ open }) => (
+                <Button
+                  type='button'
+                  onClick={() => {
+                    if (user) {
+                      open();
+                    } else {
+                      showError('You must be logged in to upload images');
+                    }
+                  }}
+                  variant='contained'
+                  startIcon={<CloudUploadIcon />}
+                  sx={{
+                    backgroundColor: '#1976d2',
+                    textTransform: 'none',
+                    borderRadius: 2,
+                    px: 2.5,
+                    py: 1,
+                    fontWeight: 500,
+                    fontSize: '0.95rem',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                    '&:hover': {
+                      backgroundColor: '#1565c0',
+                    },
+                  }}
+                >
+                  {uploadImageText}
+                </Button>
+              )}
+            </UploadWidget>
+          )}
           {showSubmitButton && (
             <ButtonSubmit text='Create Product' loading={loading} />
           )}
