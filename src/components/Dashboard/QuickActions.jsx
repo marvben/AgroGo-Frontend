@@ -7,30 +7,44 @@ import { Typography, Card, CardContent, Button, Avatar } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ImagePreview from '../ImagePreview/ImagePreview';
 import { deleteImageFromCloudinary } from '../../services/imageService';
-export default function QuickActions({ user }) {
+
+export default function QuickActions({ user, sendNewProfileImage }) {
   const { showSuccess, showError } = useUI();
   const { uploadProfileImage, deleteProfileImage } = useAuth();
-  const [image, setImage] = useState({ secure_url: '', public_id: '' });
+  const [image, setImage] = useState(
+    user?.profileImage || {
+      secure_url: '',
+      public_id: '',
+    }
+  );
   const [showUploadWidget, setShowUploadWidget] = useState(false);
-
-  useEffect(() => {
-    setImage(user.profileImage);
-    setShowUploadWidget(!user?.profileImage);
-  }, [user?.profileImage]);
 
   const handleRemove = async (public_id) => {
     try {
       const res = await deleteImageFromCloudinary(public_id);
+
       if (res.data) {
-        setImage({ secure_url: '', public_id: '' });
-        setShowUploadWidget(true);
         const ok = await deleteProfileImage();
-        if (ok.success) showSuccess('Image removed successfully');
+
+        if (ok) {
+          setShowUploadWidget(true);
+          showSuccess('Image removed successfully');
+          setImage({ secure_url: '', public_id: '' });
+          sendNewProfileImage('');
+        }
       }
     } catch (error) {
       showError(error?.response?.data?.message || 'Failed to delete image');
     }
   };
+
+  useEffect(() => {
+    if (user?.profileImage?.secure_url) {
+      setShowUploadWidget(false);
+    } else {
+      setShowUploadWidget(true);
+    }
+  }, []);
 
   const buttonStyles = { p: 1, fontSize: '1.2rem' };
 
@@ -57,7 +71,7 @@ export default function QuickActions({ user }) {
         </Typography>
         {!showUploadWidget ? (
           <ImagePreview
-            url={image.secure_url}
+            url={image.secure_url || 'https://i.pravatar.cc/40'}
             public_id={image.public_id}
             onRemove={handleRemove}
           />
@@ -72,12 +86,12 @@ export default function QuickActions({ user }) {
                   public_id: result.info.public_id,
                 };
 
-                setImage(uploadedFile);
-
-                const ok = await uploadProfileImage(uploadedFile);
-                if (ok) {
+                const res = await uploadProfileImage(uploadedFile);
+                if (res.success) {
+                  setImage(res.profileImage);
                   showSuccess('Image added successfully');
                   setShowUploadWidget(false);
+                  sendNewProfileImage(res.profileImage.secure_url);
                 }
               } else {
                 showError('Upload failed. Please try again.');

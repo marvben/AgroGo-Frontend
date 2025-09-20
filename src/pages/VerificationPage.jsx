@@ -1,5 +1,5 @@
 // src/pages/VerifyCode.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
 import {
   AppBar,
@@ -11,19 +11,18 @@ import {
   Button,
   IconButton,
   InputAdornment,
-  Snackbar,
-  Alert,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Controller, useForm } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
-import API from '../api/axios'; //  axios instance (withCredentials: true)
 import { useAuth } from '../context/AuthContext/useAuth';
 
 export default function VerifyCode() {
-  const { user, resetExpireTime, role, userUrl, expireTime } = useAuth(); // Assuming user is fetched from context
+  const { user, role, userUrl, verifyEmail, getEmailNewVerificationCode } =
+    useAuth(); // Assuming user is fetched from context
   const [showCode, setShowCode] = useState(false);
   const [pageTitle, setPageTitle] = useState('Verify Code');
+
   const {
     control,
     handleSubmit,
@@ -35,80 +34,36 @@ export default function VerifyCode() {
 
   const navigate = useNavigate();
 
+  if (user?.isEmailVerified) {
+    return <Navigate to={userUrl} replace />;
+  }
+
   const onSubmit = async ({ code }) => {
     if (code.trim() === user.verificationCode || !user.isVerified) {
       setPageTitle('Verifying Code...');
-      try {
-        const res = await API.patch(`/api/users/verify`, {
-          code,
-          email: user.email,
-        });
-        if (res.data) {
-          setSnack({ open: true, type: 'success', msg: 'Account verified.' });
+      const ok = await verifyEmail(code);
 
-          setPageTitle('Account Verified');
-
-          navigate(userUrl);
-          reset();
-        } else {
-          setPageTitle('Re-enter your code');
-          throw new Error(res.data?.message || 'Verification failed');
-        }
-      } catch (err) {
-        setSnack({
-          open: true,
-          type: 'error',
-          msg:
-            err?.response?.data?.message ||
-            err.message ||
-            'Verification failed',
-        });
-
+      if (ok) {
+        setPageTitle('Email Verified');
+        navigate(userUrl);
+        reset();
+      } else {
         setPageTitle('Re-enter your code');
       }
     } else {
       setPageTitle('Re-enter your code');
-      setSnack({
-        open: true,
-        type: 'error',
-        msg: 'Invalid code. Please try again.',
-      });
+      throw new Error('Invalid code. Please try again.');
     }
   };
 
   const getNewCode = async () => {
     setPageTitle('Sending New Code...');
-    try {
-      const res = await API.post('/api/users/verification-code', {
-        email: user.email,
-      });
+    const ok = await getEmailNewVerificationCode();
 
-      // Check for expected success flag or code field
-      if (res.data?.verificationCode) {
-        await resetExpireTime(); // Reset the expiration time
-        setPageTitle('Code Sent');
-        setSnack({
-          open: true,
-          type: 'success',
-          msg: 'New verification code sent to your email.',
-        });
-      } else {
-        setSnack({
-          open: true,
-          type: 'error',
-          msg: res.data?.message || 'Failed to get new code',
-        });
-        throw new Error(res.data?.message || 'Failed to get new code');
-      }
-    } catch (err) {
-      setSnack({
-        open: true,
-        type: 'error',
-        msg:
-          err?.response?.data?.message ||
-          err.message ||
-          'Failed to get new code',
-      });
+    if (ok) {
+      setPageTitle('Code Sent');
+    } else {
+      throw new Error('Failed to get new code');
     }
   };
 

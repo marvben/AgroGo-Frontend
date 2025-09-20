@@ -1,14 +1,16 @@
 import { AppBar, Toolbar, Typography, Avatar } from '@mui/material';
 import { useState, useEffect } from 'react';
 
-const TopBar = ({ user }) => {
-  const [profileImage, setProfileImage] = useState('https://i.pravatar.cc/40');
+const TopBar = ({ user, newProfileImage }) => {
+  const [profileImage, setProfileImage] = useState(
+    user?.profileImage?.secure_url ||
+      newProfileImage ||
+      'https://i.pravatar.cc/40'
+  );
 
   useEffect(() => {
-    if (user?.profileImage?.secure_url) {
-      setProfileImage(user.profileImage?.secure_url);
-    }
-  }, [user?.profileImage?.secure_url]);
+    setProfileImage(newProfileImage || 'https://i.pravatar.cc/40');
+  }, [newProfileImage]);
 
   return (
     <AppBar

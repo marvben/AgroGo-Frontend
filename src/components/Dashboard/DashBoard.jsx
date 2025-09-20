@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link as RouterLink, Navigate } from 'react-router-dom';
+
 import { Box } from '@mui/material';
 import { keyframes } from '@mui/system';
 import TopBar from './TopBar';
@@ -8,13 +10,18 @@ import QuickActions from './QuickActions';
 import RecentActivity from './RecentActivity';
 
 export default function Dashboard({ user }) {
+  const [newProfileImage, setNewProfileImage] = useState('');
   const fadeUp = keyframes`
       0% { opacity: 0; transform: translateY(20px); }
       100% { opacity: 1; transform: translateY(0); }
     `;
 
-  if (!user.isEmailVerified || !user.isPhoneVerified)
+  if (!user.isEmailVerified && !user.isPhoneVerified)
     return <Navigate to='/verify' replace />;
+
+  const handleGetNewProfileImage = (image) => {
+    setNewProfileImage(image);
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -28,7 +35,7 @@ export default function Dashboard({ user }) {
           animation: `${fadeUp} 0.6s ease-out`,
         }}
       >
-        <TopBar user={user} />
+        <TopBar user={user} newProfileImage={newProfileImage} />
         <Box
           sx={{
             display: 'grid',
@@ -38,7 +45,10 @@ export default function Dashboard({ user }) {
           }}
         >
           <AccountDetails user={user} />
-          <QuickActions user={user} />
+          <QuickActions
+            user={user}
+            sendNewProfileImage={handleGetNewProfileImage}
+          />
           <RecentActivity user={user} />
         </Box>
       </Box>

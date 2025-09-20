@@ -1,20 +1,16 @@
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../../context/AuthContext/useAuth';
 import AuthFormLayout from './AuthFormLayout';
 import RegisterFormFields from './RegisterFormFields';
 import LoginFormFields from './LoginFormFields';
 import ResetPasswordFormFields from './ResetPasswordFormFields';
-import ButtonSubmit from './ButtonSubmit';
 
 export default function AuthForm({ mode = 'login', onSubmit, loading }) {
-  const { role } = useAuth();
   const {
     handleSubmit,
     register,
+    control,
     formState: { errors },
   } = useForm();
-
-  const roles = ['customer', 'farmer'];
 
   const inputStyles = {
     '& .MuiInputBase-input': {
@@ -52,42 +48,34 @@ export default function AuthForm({ mode = 'login', onSubmit, loading }) {
           ? 'Login'
           : mode === 'resetPassword'
           ? 'Reset Password'
-          : 'Register'
+          : 'Join as a farmer or buyer'
       }
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ textAlign: 'center' }}>
         {mode === 'login' && (
-          <>
-            <LoginFormFields
-              inputStyles={inputStyles}
-              roles={roles}
-              register={register}
-              errors={errors}
-            />
-            <ButtonSubmit loading={loading} text={`Login`} />
-          </>
+          <LoginFormFields
+            inputStyles={inputStyles}
+            register={register}
+            errors={errors}
+            loading={loading}
+          />
         )}
         {mode === 'register' && (
-          <>
-            <RegisterFormFields
-              inputStyles={inputStyles}
-              roles={roles}
-              register={register}
-              errors={errors}
-            />{' '}
-            <ButtonSubmit loading={loading} text={`Register as ${role}`} />
-          </>
+          <RegisterFormFields
+            inputStyles={inputStyles}
+            register={register}
+            control={control}
+            errors={errors}
+            loading={loading}
+          />
         )}
         {mode === 'resetPassword' && (
-          <>
-            <ResetPasswordFormFields
-              inputStyles={inputStyles}
-              roles={roles}
-              register={register}
-              errors={errors}
-            />{' '}
-            <ButtonSubmit loading={loading} text='Reset Password ' />
-          </>
+          <ResetPasswordFormFields
+            inputStyles={inputStyles}
+            register={register}
+            errors={errors}
+            loading={loading}
+          />
         )}
       </form>
     </AuthFormLayout>

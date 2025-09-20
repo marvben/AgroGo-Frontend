@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { useUI } from '../UIContext/useUI';
 import getRemainingTime from '../../utils/getRemainingTime';
-
 import {
   registerUser,
+  verifyEmail as verifyEmailService,
+  getEmailNewVerificationCode as getEmailNewVerificationCodeService,
   loginUser,
   logoutUser,
   deleteUser as deleteUserService,
@@ -41,9 +42,12 @@ export const AuthProvider = ({ children }) => {
     const storedUser = async () => {
       try {
         const res = await getProfile();
+        console.log(res);
         if (res.data) {
           setUser(res.data);
           setIsAuthenticated(true);
+        } else {
+          navigate('/login');
         }
       } catch {
         setUser(null);
@@ -54,10 +58,62 @@ export const AuthProvider = ({ children }) => {
     };
 
     storedUser();
+
     return () => setUser(null);
   }, []);
 
   // Auth actions
+
+  const register = async (data) => {
+    try {
+      const { data: result } = await registerUser(data);
+      if (result?.user) {
+        setUser(result.user);
+        showSuccess(`Welcome ${result.user.name}, registration successful!`);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      showError(err?.response?.data?.message || err.message);
+      return false;
+    }
+  };
+
+  const verifyEmail = async (code) => {
+    try {
+      const res = await verifyEmailService(code);
+
+      if (res.data.success) {
+        showSuccess(res?.data?.message || 'Account verified.');
+        return true;
+      } else {
+        showError(res.data?.message || 'Verification failed');
+        return false;
+      }
+    } catch (err) {
+      showError(
+        err?.response?.data?.message || err.message || 'Verification failed'
+      );
+    }
+  };
+
+  const getEmailNewVerificationCode = async () => {
+    try {
+      const result = await getEmailNewVerificationCodeService();
+      if (result.data?.success) {
+        showSuccess('New verification code sent to your email.');
+        return true;
+      } else {
+        showError('Failed to get new code');
+        return false;
+      }
+    } catch (err) {
+      showError(
+        err?.response?.data?.message || err.message || 'Failed to get new code'
+      );
+    }
+  };
+
   const login = async (data) => {
     try {
       const { data: result } = await loginUser(data);
@@ -77,21 +133,6 @@ export const AuthProvider = ({ children }) => {
           err.message ||
           'Unable to login'
       );
-      return false;
-    }
-  };
-
-  const register = async (data) => {
-    try {
-      const { data: result } = await registerUser(data);
-      if (result?.user) {
-        setUser(result.user);
-        showSuccess(`Welcome ${result.user.name}, registration successful!`);
-        return true;
-      }
-      return false;
-    } catch (err) {
-      showError(err?.response?.data?.message || err.message);
       return false;
     }
   };
@@ -210,8 +251,10 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        login,
         register,
+        verifyEmail,
+        getEmailNewVerificationCode,
+        login,
         logout,
         deleteUser,
         forgotPassword,

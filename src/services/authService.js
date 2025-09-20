@@ -20,3 +20,7 @@ export const checkUrlValidity = (params) =>
   API.get(`/api/users/reset-password/${params}`);
 
 export const getProfile = () => API.get(`/api/users/profile`);
+
+export const verifyEmail = (code) => API.patch('/api/users/verify', { code });
+export const getEmailNewVerificationCode = () =>
+  API.post('/api/users/verification-code');
