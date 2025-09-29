@@ -20,10 +20,9 @@ export const ProductProvider = ({ children }) => {
   // Product actions
   const getManyProducts = async (params) => {
     try {
-      const { data: result } = await fetchManyProducts(params);
-      if (result?.products > 0) return result.products;
-
-      return false;
+      const response = await fetchManyProducts(params);
+      if (!response) throw new Error();
+      return response.data;
     } catch (err) {
       showError('No product was found');
       return false;
@@ -83,9 +82,9 @@ export const ProductProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  const removeProduct = async (productId) => {
+  const removeProduct = async (productToDelete) => {
     try {
-      const { data: result } = await deleteProduct(productId);
+      const { data: result } = await deleteProduct(productToDelete);
       if (result?.success) {
         showSuccess(`Product Deleted`);
         return true;

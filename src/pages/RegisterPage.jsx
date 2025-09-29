@@ -55,7 +55,6 @@ export default function RegisterPage() {
       });
       return;
     }
-
     setLoading(true);
     const registeredUser = await register(data);
     if (registeredUser) navigate('/verify'); // Redirect to verification page

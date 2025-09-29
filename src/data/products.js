@@ -1,5 +1,3 @@
-import API from '../api/axios';
-
 const imageUrl = 'https://picsum.photos/400/200';
 
 const products = [

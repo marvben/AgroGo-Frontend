@@ -48,20 +48,11 @@ export default function VerifyCode() {
   }
 
   const onSubmit = async ({ code }) => {
-    if (code.trim() === user.verificationCode || !user.isVerified) {
-      setPageTitle('Verifying Code...');
-      const ok = await verifyEmail(code);
-
-      if (ok) {
-        setPageTitle('Email Verified');
-        navigate(userUrl);
-        reset();
-      } else {
-        setPageTitle('Re-enter your code');
-      }
-    } else {
-      setPageTitle('Re-enter your code');
-      throw new Error('Invalid code. Please try again.');
+    setPageTitle('Verifying Code...');
+    const ok = await verifyEmail(code.trim());
+    if (ok) {
+      navigate(userUrl);
+      reset();
     }
   };
 

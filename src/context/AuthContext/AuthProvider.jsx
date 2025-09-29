@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }) => {
       }
       return false;
     } catch (err) {
+      console.log(err);
       showError(err?.response?.data?.message || err.message);
       return false;
     }
@@ -86,6 +87,7 @@ export const AuthProvider = ({ children }) => {
 
       if (res.data.success) {
         showSuccess(res?.data?.message || 'Account verified.');
+        setUser((prev) => ({ ...prev, isEmailVerified: true }));
         return true;
       } else {
         showError(res.data?.message || 'Verification failed');
@@ -95,6 +97,7 @@ export const AuthProvider = ({ children }) => {
       showError(
         err?.response?.data?.message || err.message || 'Verification failed'
       );
+      return false;
     }
   };
 

@@ -17,9 +17,6 @@ export default function CreateProductPage() {
       ),
     };
     setLoading(true);
-    console.log(data);
-    console.log(productImages);
-    console.log(productFullData);
     const ok = await addProduct(productFullData);
     setLoading(false);
     if (ok) {

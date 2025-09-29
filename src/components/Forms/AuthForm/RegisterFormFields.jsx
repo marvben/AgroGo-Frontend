@@ -7,12 +7,16 @@ import {
   Box,
   Button,
   Link,
+  Autocomplete,
 } from '@mui/material';
 import ButtonSubmit from './ButtonSubmit';
 import { Controller } from 'react-hook-form';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-
+import {
+  states,
+  localGovernments,
+} from '../../../data/nigeria_states_lgas_full.json';
 const RegisterFormFields = ({
   inputStyles,
   register,
@@ -137,29 +141,6 @@ const RegisterFormFields = ({
           helperText={errors.password?.message}
           sx={inputStyles}
         />
-        {/* Roles */}
-        {/* <TextField
-        select
-        label='Account Type'
-        defaultValue='customer'
-        fullWidth
-        margin='normal'
-        {...register('role', { required: 'Account type is required' })}
-        error={!!errors.role}
-        helperText={errors.role?.message}
-        sx={{
-          ...inputStyles,
-          '& .MuiInputBase-root': {
-            backgroundColor: '#0f172a', // makes the select field white
-          },
-        }}
-      >
-        {roles.map((option, idx) => (
-          <MenuItem key={idx} value={option} onClick={() => setRole(option)}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField> */}
         <TextField
           label='Confirm Password'
           type='password'
@@ -204,26 +185,78 @@ const RegisterFormFields = ({
           helperText={errors.address?.message}
           sx={inputStyles}
         />
+
         <TextField
-          label='City'
+          label='Town/City'
           fullWidth
           {...register('city', { required: 'City is required' })}
           error={!!errors.city}
           helperText={errors.city?.message}
           sx={inputStyles}
         />
-        <TextField
-          label='State'
-          fullWidth
-          {...register('state', { required: 'State is required' })}
-          error={!!errors.state}
-          helperText={errors.state?.message}
-          sx={inputStyles}
+
+        {/* LGA Selector */}
+        <Controller
+          name='localGovernment'
+          control={control}
+          rules={{ required: 'Local Government is required' }}
+          render={({ field }) => (
+            <Autocomplete
+              fullWidth
+              disablePortal
+              options={localGovernments}
+              getOptionLabel={(option) => option}
+              sx={inputStyles}
+              value={field.value || null}
+              onChange={(_, newValue) => field.onChange(newValue || '')}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label='Select Local Government'
+                  error={!!errors.localGovernment}
+                  helperText={errors.localGovernment?.message}
+                />
+              )}
+              renderOption={(props, option, { index }) => (
+                <li {...props} key={index}>
+                  {option}
+                </li>
+              )}
+            />
+          )}
         />
+
+        {/* State Selector */}
+        <Controller
+          name='state'
+          control={control}
+          rules={{ required: 'State is required' }}
+          render={({ field }) => (
+            <Autocomplete
+              fullWidth
+              disablePortal
+              options={states}
+              getOptionLabel={(option) => option}
+              sx={inputStyles}
+              value={field.value || null}
+              onChange={(_, newValue) => field.onChange(newValue || '')}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label='Select State'
+                  error={!!errors.state}
+                  helperText={errors.state?.message}
+                />
+              )}
+            />
+          )}
+        />
+
         <TextField
           label='Country'
           fullWidth
           {...register('country', { required: 'Country is required' })}
+          value={'Nigeria'}
           error={!!errors.country}
           helperText={errors.country?.message}
           sx={inputStyles}
@@ -278,7 +311,6 @@ const RegisterFormFields = ({
           </>
         )}
         <ButtonSubmit loading={loading} text={`Register as ${selectedRole}`} />
-
         <Box mt={3} textAlign='center'>
           <Typography variant='body2' sx={{ color: '#cbd5e1' }}>
             Already have an account?

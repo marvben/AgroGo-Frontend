@@ -1,5 +1,5 @@
-const MyProductsPage = () => {
-  return <h1>My Products</h1>;
-};
+import ProductTable from '../components/Products/ProductTable/ProductTable';
 
-export default MyProductsPage;
+export default function MyProductsPage() {
+  return <ProductTable />;
+}
