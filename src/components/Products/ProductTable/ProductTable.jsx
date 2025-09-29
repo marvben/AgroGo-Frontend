@@ -35,6 +35,7 @@ export default function ProductTable() {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [productToDeleteName, setProductToDeleteName] = useState('Product');
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -63,6 +64,7 @@ export default function ProductTable() {
   const handleDelete = (p) => {
     setOpen(true);
     setProductToDeleteID(p?._id);
+    setProductToDeleteName(p?.title);
   };
 
   const handleConfirmDelete = async () => {
@@ -246,6 +248,7 @@ export default function ProductTable() {
         />
       )}
       <ConfirmDeletePopUp
+        name={productToDeleteName}
         open={open}
         onClose={() => setOpen(false)}
         onConfirm={handleConfirmDelete}

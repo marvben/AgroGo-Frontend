@@ -8,11 +8,17 @@ import {
   Button,
 } from '@mui/material';
 
-const ConfirmDeletePopUp = ({ open, onClose, onConfirm, type = 'product' }) => {
+const ConfirmDeletePopUp = ({
+  open,
+  onClose,
+  onConfirm,
+  type = 'product',
+  name,
+}) => {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
-        {`Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`}
+        {`Delete ${name.charAt(0).toUpperCase() + name.slice(1)}?`}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>

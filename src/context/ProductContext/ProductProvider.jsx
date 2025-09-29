@@ -86,7 +86,7 @@ export const ProductProvider = ({ children }) => {
     try {
       const { data: result } = await deleteProduct(productToDelete);
       if (result?.success) {
-        showSuccess(`Product Deleted`);
+        showSuccess(result?.product?.title?.toUpperCase() + ' Deleted!');
         return true;
       }
       return false;
