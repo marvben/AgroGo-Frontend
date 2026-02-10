@@ -15,7 +15,6 @@ export const ProductProvider = ({ children }) => {
   const getManyProducts = async (params) => {
     try {
       const response = await fetchManyProducts(params);
-
       if (!response) throw new Error();
       return response.data;
     } catch (err) {
