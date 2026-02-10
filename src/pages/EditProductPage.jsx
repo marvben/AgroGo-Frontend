@@ -43,7 +43,7 @@ export default function EditProductPage() {
     setLoading(false);
 
     if (ok) {
-      navigate('/dashboard/my-products');
+      navigate('/dashboard/products');
     }
   };
 

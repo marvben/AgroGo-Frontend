@@ -20,15 +20,10 @@ export default function OrdersPage() {
   const fetchOrders = async () => {
     try {
       let response;
-      if (user?.role === 'admin') {
-        response = await getAllOrdersAdmin();
-      } else if (user?.role === 'farmer') {
-        response = await getFarmerOrders(); // Ensure this endpoint exists and works
-      }
+      if (user?.role === 'admin') response = await getAllOrdersAdmin();
+      if (user?.role === 'farmer') response = await getFarmerOrders(); // Ensure this endpoint exists and works
 
-      if (response && response.data.success) {
-        setOrders(response.data.orders);
-      }
+      if (response?.data?.success) setOrders(response.data.orders);
     } catch (error) {
       console.error('Failed to fetch orders:', error);
       toast.error('Failed to load orders');

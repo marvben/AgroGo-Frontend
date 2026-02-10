@@ -72,7 +72,9 @@ export default function ProductForm({ mode = 'create', onSubmit, loading, title,
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [catRes, tagRes] = await Promise.all([axios.get('/categories'), axios.get('/tags')]);
+        const [catRes, tagRes] = await Promise.all([axios.get('/api/categories'), axios.get('/api/tags')]);
+        console.log(tagRes.data.data);
+
         if (catRes.data.success) setCategories(catRes.data.data);
         if (tagRes.data.success) setTags(tagRes.data.data);
       } catch (err) {

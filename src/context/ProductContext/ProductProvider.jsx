@@ -15,10 +15,10 @@ export const ProductProvider = ({ children }) => {
   const getManyProducts = async (params) => {
     try {
       const response = await fetchManyProducts(params);
+
       if (!response) throw new Error();
       return response.data;
     } catch (err) {
-      showError('No product was found');
       return false;
     } finally {
       setLoading(false);
@@ -31,7 +31,6 @@ export const ProductProvider = ({ children }) => {
 
       return false;
     } catch (err) {
-      showError('No product was found');
       return false;
     } finally {
       setLoading(false);

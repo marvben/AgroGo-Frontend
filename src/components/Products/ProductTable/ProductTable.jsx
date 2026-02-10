@@ -23,7 +23,7 @@ export default function ProductTable() {
     if (!user?._id) return;
     setLoading(true);
     try {
-      const { results } = await getManyProducts({ id: user._id }); // Fetch all user products
+      const results = await getManyProducts({ id: user._id }); // Fetch all user products
       setProducts(results || []);
     } catch (err) {
       console.error('Failed to fetch products:', err);

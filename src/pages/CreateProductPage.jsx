@@ -17,7 +17,7 @@ export default function CreateProductPage() {
     const ok = await addProduct(productFullData);
     setLoading(false);
     if (ok) {
-      navigate('/my-products');
+      navigate('/products');
     }
   };
 

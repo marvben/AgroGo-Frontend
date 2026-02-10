@@ -33,7 +33,6 @@ export default function ProfilePage() {
           <div className='flex flex-col md:flex-row items-center gap-6'>
             <Avatar className='h-24 w-24 border-4 border-muted'>
               <AvatarImage src={user?.profileImage?.secure_url} alt={user.name} />
-              {console.log(user)}
               <AvatarFallback className='text-2xl'>{user?.username?.[0]?.toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className='text-center md:text-left space-y-2 flex-1'>
