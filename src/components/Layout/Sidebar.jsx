@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, ShoppingBag, List, Tag, Settings, LogOut, Users } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, List, Tag, Settings, LogOut, Users, UserCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext/useAuth';
 
 export default function Sidebar({ className }) {
@@ -15,6 +15,7 @@ export default function Sidebar({ className }) {
     { name: 'Tags', path: '/dashboard/tags', icon: Tag, roles: ['admin'] },
     { name: 'Users', path: '/dashboard/users', icon: Users, roles: ['admin'] },
     { name: 'Orders', path: '/dashboard/orders', icon: ShoppingBag, roles: ['admin', 'farmer'] },
+    { name: 'Profile', path: '/dashboard/profile', icon: UserCheck, roles: ['admin', 'farmer', 'customer'] },
     { name: 'Settings', path: '/dashboard/settings', icon: Settings, roles: ['admin', 'farmer', 'customer'] },
   ];
 

@@ -4,14 +4,8 @@ import { useParams } from 'react-router-dom';
 import { ProductContext } from './ProductContext';
 import Notification from '../../utils/Notification';
 import useSnackbar from '../../hooks/useSnackbar';
-import {
-  fetchManyProducts,
-  fetchProduct,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  deleteManyProducts,
-} from '../../services/productService';
+import { getErrorMessage } from '../../utils/errorHandler';
+import { fetchManyProducts, fetchProduct, createProduct, updateProduct, deleteProduct, deleteManyProducts } from '../../services/productService';
 
 export const ProductProvider = ({ children }) => {
   const { snack, setSnack, showSuccess, showError } = useSnackbar();
@@ -53,7 +47,8 @@ export const ProductProvider = ({ children }) => {
       }
       return false;
     } catch (err) {
-      showError(err?.response?.data?.message || err.message);
+      const message = getErrorMessage(err);
+      showError(message);
       return false;
     } finally {
       setLoading(false);
@@ -76,7 +71,8 @@ export const ProductProvider = ({ children }) => {
       }
       return false;
     } catch (err) {
-      showError(err?.response?.data?.message || err.message);
+      const message = getErrorMessage(err);
+      showError(message);
       return false;
     } finally {
       setLoading(false);
@@ -91,7 +87,8 @@ export const ProductProvider = ({ children }) => {
       }
       return false;
     } catch (err) {
-      showError(err?.response?.data?.message || err.message);
+      const message = getErrorMessage(err);
+      showError(message);
       return false;
     } finally {
       setLoading(false);
@@ -107,7 +104,8 @@ export const ProductProvider = ({ children }) => {
       }
       return false;
     } catch (err) {
-      showError(err?.response?.data?.message || err.message);
+      const message = getErrorMessage(err);
+      showError(message);
       return false;
     } finally {
       setLoading(false);

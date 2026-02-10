@@ -11,15 +11,26 @@ import { useEffect } from 'react';
 
 const Notification = ({ snack, setSnack }) => {
   useEffect(() => {
-    if (snack.open) {
+    if (snack.open && snack.msg) {
+      const messageContent = Array.isArray(snack.msg) ? (
+        <ul className='list-disc pl-5 space-y-1 text-sm w-full break-words text-left'>
+          {snack.msg.map((m, i) => (
+            <li key={i} className='leading-snug'>
+              {m}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        snack.msg
+      );
+
       if (snack.type === 'error') {
-        toast.error(snack.msg);
+        toast.error(messageContent);
       } else if (snack.type === 'success') {
-        toast.success(snack.msg);
+        toast.success(messageContent);
       } else {
-        toast(snack.msg);
+        toast(messageContent);
       }
-      // Close the internal state immediately so it doesn't loop
       setSnack((s) => ({ ...s, open: false }));
     }
   }, [snack, setSnack]);

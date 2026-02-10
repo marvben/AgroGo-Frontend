@@ -33,6 +33,7 @@ import OrdersPage from './pages/admin/OrdersPage';
 import CategoriesPage from './pages/admin/CategoriesPage';
 import TagsPage from './pages/admin/TagsPage';
 import SettingsPage from './pages/SettingsPage';
+import ProfilePage from './pages/ProfilePage';
 import { Toaster } from 'sonner';
 
 function App() {
@@ -109,6 +110,14 @@ function App() {
             }
           />
           <Route
+            path='profile'
+            element={
+              <RoleRoute allow={['admin', 'farmer', 'customer']}>
+                <ProfilePage />
+              </RoleRoute>
+            }
+          />
+          <Route
             path='settings'
             element={
               <RoleRoute allow={['admin', 'farmer', 'customer']}>
@@ -168,7 +177,22 @@ function App() {
       </Routes>
       {!isDashboardRoute && <Footer />}
       {!isDashboardRoute && <BottomNav />}
-      <Toaster position='top-right' richColors closeButton />
+      <Toaster
+        position='top-right'
+        richColors={true}
+        expand={true}
+        closeButton={true}
+        toastOptions={{
+          classNames: {
+            toast: 'flex items-center gap-4 w-full p-4',
+            title: 'text-sm font-semibold',
+            description: 'text-xs text-muted-foreground',
+            actionButton: 'bg-primary text-primary-foreground',
+            cancelButton: 'bg-muted text-muted-foreground',
+            closeButton: '!text-red-900',
+          },
+        }}
+      />
     </>
   );
 }

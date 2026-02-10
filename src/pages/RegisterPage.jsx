@@ -23,6 +23,7 @@ export default function RegisterPage() {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -85,7 +86,34 @@ export default function RegisterPage() {
         </Link>
 
         {step === 2 && (
-          <button onClick={() => setStep(1)} className='block mb-4 text-sm text-muted-foreground hover:text-primary transition-colors'>
+          <button
+            onClick={() => {
+              setStep(1);
+              setSelectedRole(null);
+              setTimeout(() => {
+                reset({
+                  name: '',
+                  username: '',
+                  email: '',
+                  phone: '',
+                  address: '',
+                  city: '',
+                  lgas: '',
+                  state: '',
+                  country: '',
+                  role: 'owner',
+                  password: '',
+                  confirmPassword: '',
+                  farmName: '',
+                  farmType: '',
+                  farmSize: '',
+                  farmLocation: '',
+                  farmDescription: '',
+                });
+              }, 0);
+            }}
+            className='block mb-4 text-sm text-muted-foreground hover:text-primary transition-colors'
+          >
             &larr; Change Role
           </button>
         )}
@@ -127,49 +155,154 @@ export default function RegisterPage() {
                 </div>
 
                 <CardContent className='p-0'>
-                  <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-                    <div className='space-y-2'>
-                      <Label htmlFor='name'>Full Name</Label>
-                      <Input
-                        id='name'
-                        placeholder='John Doe'
-                        {...register('name', { required: 'Name is required' })}
-                        className={errors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
-                      />
-                      {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
+                  <form onSubmit={handleSubmit(onSubmit)} className='space-y-4' autoComplete='off'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                      <div className='space-y-2'>
+                        <Label htmlFor='name'>Full Name</Label>
+                        <Input
+                          id='name'
+                          placeholder='John Doe'
+                          {...register('name', { required: 'Name is required' })}
+                          className={errors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
+                        />
+                        {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
+                      </div>
+                      <div className='space-y-2'>
+                        <Label htmlFor='username'>Username</Label>
+                        <Input
+                          id='username'
+                          placeholder='johndoe'
+                          {...register('username', { required: 'Username is required' })}
+                          className={errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}
+                        />
+                        {errors.username && <p className='text-xs text-destructive'>{errors.username.message}</p>}
+                      </div>
+                    </div>
+
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                      <div className='space-y-2'>
+                        <Label htmlFor='email'>Email</Label>
+                        <Input
+                          id='email'
+                          type='email'
+                          placeholder='name@example.com'
+                          {...register('email', {
+                            required: 'Email is required',
+                            pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Invalid email' },
+                          })}
+                          className={errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+                        />
+                        {errors.email && <p className='text-xs text-destructive'>{errors.email.message}</p>}
+                      </div>
+                      <div className='space-y-2'>
+                        <Label htmlFor='phone'>Phone</Label>
+                        <Input
+                          id='phone'
+                          placeholder='+234...'
+                          {...register('phone', { required: 'Phone is required' })}
+                          className={errors.phone ? 'border-destructive focus-visible:ring-destructive' : ''}
+                        />
+                        {errors.phone && <p className='text-xs text-destructive'>{errors.phone.message}</p>}
+                      </div>
+                    </div>
+
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                      <div className='space-y-2'>
+                        <Label htmlFor='country'>Country</Label>
+                        <Input
+                          id='country'
+                          placeholder='Country'
+                          {...register('country', { required: 'Country is required' })}
+                          className={errors.country ? 'border-destructive focus-visible:ring-destructive' : ''}
+                        />
+                        {errors.country && <p className='text-xs text-destructive'>{errors.country.message}</p>}
+                      </div>
+                      <div className='space-y-2'>
+                        <Label htmlFor='state'>State</Label>
+                        <Input
+                          id='state'
+                          placeholder='State'
+                          {...register('state', { required: 'State is required' })}
+                          className={errors.state ? 'border-destructive focus-visible:ring-destructive' : ''}
+                        />
+                        {errors.state && <p className='text-xs text-destructive'>{errors.state.message}</p>}
+                      </div>
+                    </div>
+
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                      <div className='space-y-2'>
+                        <Label htmlFor='city'>City</Label>
+                        <Input
+                          id='city'
+                          placeholder='City'
+                          {...register('city', { required: 'City is required' })}
+                          className={errors.city ? 'border-destructive focus-visible:ring-destructive' : ''}
+                        />
+                        {errors.city && <p className='text-xs text-destructive'>{errors.city.message}</p>}
+                      </div>
+                      <div className='space-y-2'>
+                        <Label htmlFor='lgas'>Local Government</Label>
+                        <Input id='lgas' placeholder='LGA' {...register('lgas', { required: 'LGA is required' })} className={errors.lgas ? 'border-destructive focus-visible:ring-destructive' : ''} />
+                        {errors.lgas && <p className='text-xs text-destructive'>{errors.lgas.message}</p>}
+                      </div>
                     </div>
 
                     <div className='space-y-2'>
-                      <Label htmlFor='email'>Email</Label>
+                      <Label htmlFor='address'>Address</Label>
                       <Input
-                        id='email'
-                        type='email'
-                        placeholder='name@example.com'
-                        {...register('email', {
-                          required: 'Email is required',
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: 'Invalid email address',
-                          },
-                        })}
-                        className={errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+                        id='address'
+                        placeholder='Full Address'
+                        {...register('address', { required: 'Address is required' })}
+                        className={errors.address ? 'border-destructive focus-visible:ring-destructive' : ''}
                       />
-                      {errors.email && <p className='text-xs text-destructive'>{errors.email.message}</p>}
+                      {errors.address && <p className='text-xs text-destructive'>{errors.address.message}</p>}
                     </div>
 
-                    <div className='grid grid-cols-2 gap-4'>
+                    {selectedRole === 'farmer' && (
+                      <div className='space-y-4 border-t pt-4 mt-4'>
+                        <h3 className='text-sm font-semibold'>Farm Details</h3>
+                        <div className='space-y-2'>
+                          <Label htmlFor='farmName'>Farm Name</Label>
+                          <Input
+                            id='farmName'
+                            placeholder='Green Acres'
+                            {...register('farmName', { required: 'Farm Name is required' })}
+                            className={errors.farmName ? 'border-destructive focus-visible:ring-destructive' : ''}
+                          />
+                          {errors.farmName && <p className='text-xs text-destructive'>{errors.farmName.message}</p>}
+                        </div>
+                        <div className='grid grid-cols-2 gap-4'>
+                          <div className='space-y-2'>
+                            <Label htmlFor='farmType'>Farm Type</Label>
+                            <Input id='farmType' placeholder='e.g. Crop, Livestock' {...register('farmType')} />
+                          </div>
+                          <div className='space-y-2'>
+                            <Label htmlFor='farmSize'>Farm Size</Label>
+                            <Input id='farmSize' placeholder='e.g. 50 Acres' {...register('farmSize')} />
+                          </div>
+                        </div>
+                        <div className='space-y-2'>
+                          <Label htmlFor='farmLocation'>Farm Location</Label>
+                          <Input id='farmLocation' placeholder='Farm Address (if different)' {...register('farmLocation')} />
+                        </div>
+                        <div className='space-y-2'>
+                          <Label htmlFor='farmDescription'>Description</Label>
+                          <Input id='farmDescription' placeholder='Short description of your farm' {...register('farmDescription')} />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className='grid grid-cols-2 gap-4 pt-2'>
                       <div className='space-y-2'>
                         <Label htmlFor='password'>Password</Label>
                         <Input
                           id='password'
                           type='password'
+                          autoComplete='new-password'
                           placeholder='••••••••'
                           {...register('password', {
                             required: 'Password is required',
-                            minLength: {
-                              value: 6,
-                              message: 'Min 6 characters',
-                            },
+                            minLength: { value: 6, message: 'Min 6 characters' },
                           })}
                           className={errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}
                         />
@@ -180,6 +313,7 @@ export default function RegisterPage() {
                         <Input
                           id='confirmPassword'
                           type='password'
+                          autoComplete='new-password'
                           placeholder='••••••••'
                           {...register('confirmPassword', {
                             required: 'Confirm Password is required',

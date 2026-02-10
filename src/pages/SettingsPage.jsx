@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext/useAuth';
-import { toast } from 'sonner';
+import { useUI } from '@/context/UIContext/useUI';
+import { getErrorMessage } from '@/utils/errorHandler';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +15,9 @@ import { updateProfile } from '@/services/authService';
 import { uploadProfileImage } from '@/services/imageService';
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
   const { user, setUser } = useAuth();
+  const { showError, showSuccess } = useUI();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -68,12 +72,19 @@ export default function SettingsPage() {
       const { data } = await updateProfile(payload);
 
       if (data) {
-        toast.success('Profile updated successfully');
+        showSuccess('Profile updated successfully');
         // Update local user context
-        setUser(data);
+        if (typeof setUser === 'function') {
+          setUser(data);
+        } else {
+          // Fallback: force reload to update context if setUser is missing
+          window.location.reload();
+          return;
+        }
+        navigate('/dashboard/profile');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to update profile');
+      showError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -92,7 +103,7 @@ export default function SettingsPage() {
         const { data } = await uploadProfileImage(payload);
 
         if (data) {
-          toast.success('Profile image updated');
+          showSuccess('Profile image updated');
           // If the response contains the updated user or image url, update context
           // According to routes: res.json({ message, profileImage })
           // We might need to manually update just the image in the user object
@@ -101,7 +112,7 @@ export default function SettingsPage() {
           }
         }
       } catch (error) {
-        toast.error('Failed to upload image');
+        showError(getErrorMessage(error));
       } finally {
         setUploading(false);
       }
