@@ -1,30 +1,11 @@
 // RegisterLink.jsx
-import { Button } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 export default function RegisterLink({ fullWidth = false }) {
   return (
-    <Button
-      component={RouterLink}
-      to='/register'
-      variant='outlined'
-      fullWidth={fullWidth}
-      sx={{
-        borderColor: '#38bdf8', // cyan-400
-        color: '#38bdf8',
-        fontWeight: 600,
-        textTransform: 'none',
-        px: 2.5,
-        py: 1,
-        borderRadius: 2,
-        '&:hover': {
-          borderColor: '#0ea5e9', // cyan-500
-          color: '#0ea5e9',
-          backgroundColor: 'rgba(56,189,248,0.08)', // subtle hover bg
-        },
-      }}
-    >
-      Register
+    <Button asChild variant='outline' className={`font-semibold border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 hover:text-cyan-500 hover:border-cyan-500 ${fullWidth ? 'w-full' : ''}`}>
+      <Link to='/register'>Register</Link>
     </Button>
   );
 }

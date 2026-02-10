@@ -1,47 +1,23 @@
-import React from 'react';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-} from '@mui/material';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
-const ConfirmDeletePopUp = ({
-  open,
-  onClose,
-  onConfirm,
-  type = 'product',
-  name,
-}) => {
+const ConfirmDeletePopUp = ({ open, onClose, onConfirm, name, type }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>
-        {`Delete ${name.charAt(0).toUpperCase() + name.slice(1)}?`}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Are you sure you want to permanently delete this {type}? This action
-          cannot be undone.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color='primary'>
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            onConfirm();
-            onClose();
-          }}
-          color='error'
-          variant='contained'
-        >
-          Delete
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <AlertDialog open={open} onOpenChange={onClose}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete the {type} <strong>{name}</strong> and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} className='bg-destructive text-destructive-foreground hover:bg-destructive/90'>
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

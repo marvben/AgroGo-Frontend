@@ -1,7 +1,7 @@
-import { Box, IconButton, CircularProgress } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import { useState } from 'react';
 import { useUI } from '../../context/UIContext/useUI';
+import { Button } from '../../ui/button';
+import { Loader2, X } from 'lucide-react';
 
 const ProfileImage = ({ url, public_id, onRemove, user }) => {
   const [deletingId, setDeletingId] = useState(false);
@@ -11,76 +11,32 @@ const ProfileImage = ({ url, public_id, onRemove, user }) => {
     try {
       setDeletingId(true);
       await onRemove(public_id);
-      setDeletingId(false);
       showSuccess('Image removed successfully');
     } catch (error) {
       showError(error?.response?.data?.message || 'Failed to delete image');
-      setDeletingId((prev) => prev.filter((id) => id !== public_id));
+    } finally {
+      setDeletingId(false);
     }
   };
 
   return (
-    <Box mb={2} display='flex' flexWrap='wrap' gap={1}>
-      <Box
-        sx={{
-          width: 200,
-          height: 200,
-          position: 'relative',
-          borderRadius: 2,
-          overflow: 'hidden',
-          border: '1px solid #ddd',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f9f9f9',
-          '&:hover .child-icon': {
-            opacity: 1,
-            transform: 'scale(1)', // optional: grow
-          },
-        }}
-      >
+    <div className='mb-4 flex flex-wrap gap-2'>
+      <div className='relative w-48 h-48 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center group'>
         {/* Delete button */}
-        <IconButton
-          className='child-icon'
+        <Button
+          variant='destructive'
+          size='icon'
+          className='absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity scale-90 group-hover:scale-100'
           onClick={() => handleDelete(public_id)}
-          size='small'
-          sx={{
-            position: 'absolute',
-            top: 4,
-            right: 4,
-            backgroundColor: 'rgba(240,0,0,0.9)',
-            color: '#fff',
-            width: 30,
-            height: 30,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transform: 'scale(0)',
-            opacity: 0,
-
-            transition: 'all 0.4s ease',
-            '&:hover': { backgroundColor: 'rgba(200,0,0,1)' },
-          }}
+          disabled={deletingId}
         >
-          {deletingId ? (
-            <CircularProgress size={20} sx={{ color: '#fff' }} />
-          ) : (
-            <CloseIcon sx={{ fontSize: 20 }} />
-          )}
-        </IconButton>
+          {deletingId ? <Loader2 className='h-4 w-4 animate-spin' /> : <X className='h-4 w-4' />}
+        </Button>
 
         {/* Image */}
-        <img
-          src={url}
-          alt={`profile-image-${user?.name}`}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          }}
-        />
-      </Box>
-    </Box>
+        <img src={url} alt={`profile-image-${user?.name}`} className='w-full h-full object-cover' />
+      </div>
+    </div>
   );
 };
 

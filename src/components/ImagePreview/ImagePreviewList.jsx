@@ -1,30 +1,12 @@
-// import { Box } from '@mui/material';
-
-// import ImagePreview from './ImagePreview';
-// const ImagePreviewList = ({ images }) => {
-//   return (
-//     <Box mb={2} display='flex' flexWrap='wrap' gap={1}>
-//       {images.map(({ url, public_id }, index) => {
-//         if (!url) return null;
-//         return (
-//           <ImagePreview key={index} url={url} public_id={public_id} onRemove />
-//         );
-//       })}
-//     </Box>
-//   );
-// };
-
-// export default ImagePreviewList;
-
-import { Box, IconButton, CircularProgress } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Button } from '@/components/ui/button';
+import { X, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useUI } from '../../context/UIContext/useUI';
 
 const ImagePreviewList = ({ images, onRemove }) => {
   const [deletingIds, setDeletingIds] = useState([]);
   const { showError, showSuccess } = useUI();
-  console.log(images);
+
   const handleDelete = async (public_id) => {
     try {
       setDeletingIds((prev) => [...prev, public_id]);
@@ -38,64 +20,27 @@ const ImagePreviewList = ({ images, onRemove }) => {
   };
 
   return (
-    <Box mb={2} display='flex' flexWrap='wrap' gap={1}>
+    <div className='flex flex-wrap gap-3 mb-4'>
       {images.map(({ secure_url, public_id }, index) => {
         if (!secure_url) return null;
         return (
-          <Box
-            key={index}
-            sx={{
-              width: 80,
-              height: 80,
-              position: 'relative',
-              borderRadius: 2,
-              overflow: 'hidden',
-              border: '1px solid #ddd',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#f9f9f9',
-            }}
-          >
+          <div key={index} className='relative w-24 h-24 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center group'>
             {/* Delete button */}
-            <IconButton
+            <Button
+              variant='destructive'
+              size='icon'
+              className='absolute top-1 right-1 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200'
               onClick={() => handleDelete(public_id)}
-              size='small'
-              sx={{
-                position: 'absolute',
-                top: 4,
-                right: 4,
-                backgroundColor: 'rgba(240,0,0,0.9)',
-                color: '#fff',
-                width: 22,
-                height: 22,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                '&:hover': { backgroundColor: 'rgba(200,0,0,1)' },
-              }}
             >
-              {deletingIds.includes(public_id) ? (
-                <CircularProgress size={16} sx={{ color: '#fff' }} />
-              ) : (
-                <CloseIcon sx={{ fontSize: 16 }} />
-              )}
-            </IconButton>
+              {deletingIds.includes(public_id) ? <Loader2 className='h-3 w-3 animate-spin' /> : <X className='h-3 w-3' />}
+            </Button>
 
             {/* Image */}
-            <img
-              src={secure_url}
-              alt={`uploaded-${index}`}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
-          </Box>
+            <img src={secure_url} alt={`uploaded-${index}`} className='w-full h-full object-cover' />
+          </div>
         );
       })}
-    </Box>
+    </div>
   );
 };
 

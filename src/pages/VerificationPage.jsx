@@ -1,37 +1,22 @@
 // src/pages/VerifyCode.jsx
 import { useState } from 'react';
-import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Button,
-  IconButton,
-  InputAdornment,
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Controller, useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Loader from '../utils/Loader';
 import { useAuth } from '../context/AuthContext/useAuth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 
 export default function VerifyCode() {
-  const {
-    user,
-    role,
-    userUrl,
-    verifyEmail,
-    getEmailNewVerificationCode,
-    loading,
-  } = useAuth(); // Assuming user is fetched from context
+  const { user, role, userUrl, verifyEmail, getEmailNewVerificationCode, loading } = useAuth();
   const [showCode, setShowCode] = useState(false);
   const [pageTitle, setPageTitle] = useState('Verify Code');
 
   const {
-    control,
+    register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
@@ -70,133 +55,72 @@ export default function VerifyCode() {
   if (user?.isVerified) return <Navigate to={userUrl} replace />;
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#0f172a' /* deep slate bg */ }}>
-      {/* Top Bar in dashboard style */}
-      <AppBar
-        position='sticky'
-        sx={{ backgroundColor: '#334155', borderRadius: 0 }}
-      >
-        <Toolbar>
-          <Typography variant='h6' sx={{ flexGrow: 1 }}>
-            Verify Code
-          </Typography>
-        </Toolbar>
-      </AppBar>
+    <div className='min-h-screen bg-slate-900 flex flex-col'>
+      {/* Top Bar */}
+      <div className='bg-slate-800 border-b border-slate-700 sticky top-0 z-10'>
+        <div className='container mx-auto px-4 h-16 flex items-center'>
+          <h1 className='text-lg font-semibold text-white'>Verify Code</h1>
+        </div>
+      </div>
 
       {/* Centered Card */}
-      <Box
-        sx={{
-          maxWidth: 420,
-          mx: 'auto',
-          mt: 6,
-          px: 2,
-        }}
-      >
-        <Card
-          sx={{
-            borderRadius: 2,
-            boxShadow: 3,
-            bgcolor: '#1e293b',
-            color: 'white',
-            border: '1px solid #475569',
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant='h5' gutterBottom>
-              {user.isVerified ? 'Your account is verified' : pageTitle}
-            </Typography>
-
-            <Typography variant='body2' sx={{ color: '#cbd5e1', mb: 3 }}>
+      <div className='flex-1 flex items-center justify-center p-4'>
+        <Card className='w-full max-w-md bg-slate-800 border-slate-700 text-white shadow-xl'>
+          <CardHeader>
+            <CardTitle>{user.isVerified ? 'Your account is verified' : pageTitle}</CardTitle>
+            <CardDescription className='text-slate-300'>
               {user.isVerified
                 ? 'You can now access your dashboard.'
-                : `Please check your email for the verification code and enter it
-              below. If you did not receive a code, please check your spam folder or request a new one.`}
-            </Typography>
-            {user.isVerified && (
-              <Button
-                component={RouterLink}
-                to={`/${role}`}
-                variant='contained'
-                color='primary'
-                fullWidth={true}
-              >
-                Go to Dashboard
+                : 'Please check your email for the verification code and enter it below. If you did not receive a code, please check your spam folder.'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {user.isVerified ? (
+              <Button asChild className='w-full' size='lg'>
+                <Link to={`/${role}`}>Go to Dashboard</Link>
               </Button>
-            )}
-            {!user.isVerified && (
-              <>
-                <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                  <Controller
-                    name='code'
-                    control={control}
-                    rules={{ required: 'Code is required' }}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        type={showCode ? 'text' : 'password'}
-                        label='Enter Verification Code'
-                        fullWidth
-                        variant='outlined'
-                        margin='normal'
-                        error={!!errors.code}
-                        helperText={errors.code?.message}
-                        InputLabelProps={{ sx: { color: '#e2e8f0' } }}
-                        InputProps={{
-                          sx: {
-                            color: 'white',
-                            '& .MuiOutlinedInput-notchedOutline': {
-                              borderColor: '#475569',
-                            },
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                              borderColor: '#94a3b8',
-                            },
-                          },
-                          endAdornment: (
-                            <InputAdornment position='end'>
-                              <IconButton
-                                aria-label='toggle code visibility'
-                                onClick={() => setShowCode((s) => !s)}
-                                edge='end'
-                                sx={{ color: '#cbd5e1' }}
-                              >
-                                {showCode ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    )}
-                  />
+            ) : (
+              <form onSubmit={handleSubmit(onSubmit)} noValidate className='space-y-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='code' className='text-slate-200'>
+                    Verification Code
+                  </Label>
+                  <div className='relative'>
+                    <Input
+                      id='code'
+                      type={showCode ? 'text' : 'password'}
+                      placeholder='Enter code'
+                      className='bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 pr-10'
+                      {...register('code', { required: 'Code is required' })}
+                    />
+                    <button type='button' onClick={() => setShowCode(!showCode)} className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white'>
+                      {showCode ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
+                    </button>
+                  </div>
+                  {errors.code && <p className='text-sm text-red-400'>{errors.code.message}</p>}
+                </div>
 
-                  <Button
-                    type='submit'
-                    variant='contained'
-                    fullWidth
-                    disabled={isSubmitting}
-                    sx={{
-                      mt: 2,
-                      bgcolor: '#2e7d32',
-                      '&:hover': { bgcolor: '#1b5e20' },
-                      fontWeight: 600,
-                    }}
-                  >
-                    {isSubmitting ? 'Verifying…' : 'Verify'}
-                  </Button>
-                </form>
-                <Button
-                  variant='text'
-                  color='primary'
-                  fullWidth
-                  sx={{ mt: 1 }}
-                  onClick={getNewCode}
-                >
-                  {isSubmitting ? 'new code sent' : 'Get new code'}
+                <Button type='submit' className='w-full bg-green-700 hover:bg-green-800 text-white font-semibold' disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Verifying...
+                    </>
+                  ) : (
+                    'Verify'
+                  )}
                 </Button>
-              </>
+              </form>
             )}
           </CardContent>
+          {!user.isVerified && (
+            <CardFooter>
+              <Button variant='ghost' className='w-full text-blue-400 hover:text-blue-300 hover:bg-slate-700/50' onClick={getNewCode} disabled={isSubmitting}>
+                {isSubmitting ? 'Sending...' : 'Get new code'}
+              </Button>
+            </CardFooter>
+          )}
         </Card>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

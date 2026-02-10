@@ -1,19 +1,28 @@
-import { IconButton } from '@mui/material';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { Button } from '../../ui/button';
+import { Heart } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useWishlist } from '@/context/WishlistContext/useWishlist';
 
-export default function WishlistButton() {
+export default function WishlistButton({ productId, className }) {
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(productId);
+
   return (
-    <IconButton
-      sx={{
-        bgcolor: '#1e293b',
-        color: '#fff',
-        borderRadius: 10,
-        '&:hover': {
-          boxShadow: '2px 2px 10px 3px rgba(0, 255, 255, 0.6)', // neon glow on hover
-        },
+    <Button
+      variant='secondary'
+      size='icon'
+      className={cn(
+        'h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm shadow-sm transition-all hover:scale-110',
+        isWishlisted ? 'text-red-500 hover:text-red-600 hover:bg-red-50' : 'hover:bg-background',
+        className,
+      )}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleWishlist(productId);
       }}
     >
-      <FavoriteBorderIcon sx={{ fontSize: 16 }} />
-    </IconButton>
+      <Heart className={cn('h-4 w-4 transition-colors', isWishlisted && 'fill-current')} />
+    </Button>
   );
 }

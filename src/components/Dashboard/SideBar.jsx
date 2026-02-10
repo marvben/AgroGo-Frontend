@@ -1,129 +1,65 @@
-import { Link as RouterLink, Navigate } from 'react-router-dom';
-import { useState } from 'react';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext/useAuth';
-import {
-  Toolbar,
-  Typography,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Box,
-  Divider,
-} from '@mui/material';
+import { cn } from '../../lib/utils';
+import { LayoutDashboard, User, Settings, LogOut, Menu, X } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '../../ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '../../ui/sheet'; // Assuming Sheet exists, or using conditional rendering
 
-import {
-  AccountCircle,
-  Settings,
-  Logout,
-  Dashboard,
-} from '@mui/icons-material';
-import { keyframes } from '@mui/system';
-
-const drawerWidth = 240;
-const slideRight = keyframes`
-      0% { opacity: 0; transform: translateX(-20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    `;
-
-export default function SideBar() {
+export default function SideBar({ className }) {
   const { logout } = useAuth();
-  const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const toggleDrawer = () => {
-    setOpen((prev) => !prev);
-  };
+  const menuItems = [
+    { text: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
+    { text: 'Account', icon: User, path: '/profile' },
+    { text: 'Settings', icon: Settings, path: '/settings' },
+  ];
+
+  const NavContent = () => (
+    <div className='flex flex-col h-full py-4'>
+      <div className='px-6 py-2 mb-6 border-b border-border/50'>
+        <h2 className='text-2xl font-bold tracking-tight text-primary'>AgroGo</h2>
+        <p className='text-xs text-muted-foreground'>My Dashboard</p>
+      </div>
+
+      <nav className='flex-1 px-4 space-y-2'>
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            onClick={() => setIsOpen(false)}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-muted',
+              location.pathname === item.path ? 'bg-primary/10 text-primary hover:bg-primary/15' : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            <item.icon className='h-5 w-5' />
+            {item.text}
+          </Link>
+        ))}
+      </nav>
+
+      <div className='px-4 mt-auto'>
+        <Button variant='ghost' className='w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10' onClick={logout}>
+          <LogOut className='h-5 w-5' />
+          Logout
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
-    <Box
-      sx={{
-        display: { xs: 'none', md: 'flex' },
+    <>
+      {/* Desktop Sidebar */}
+      <aside className={cn('hidden md:flex flex-col w-64 border-r border-border bg-card min-h-screen fixed left-0 top-0 z-40', className)}>
+        <NavContent />
+      </aside>
 
-        flexShrink: { md: 0 },
-      }}
-    >
-      {/* Top Bar with Button */}
-      <Toolbar
-        sx={{
-          backgroundColor: '#1e293b',
-          color: 'white',
-          width: 'auto',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          py: 3,
-          animation: `${slideRight} 0.6s ease-out`,
-          height: '100%',
-          minHeight: '100vh !important',
-        }}
-      >
-        <IconButton
-          onClick={toggleDrawer}
-          sx={{ color: 'white', mr: 2 }}
-          edge='start'
-        >
-          {open ? <CloseIcon /> : <MenuIcon />}
-        </IconButton>
-      </Toolbar>
-      <Drawer
-        anchor='left'
-        open={open}
-        onClose={toggleDrawer}
-        sx={{
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-            backgroundColor: '#1e293b',
-            color: 'white',
-            transition: 'all 0.3s ease-in-out',
-          },
-        }}
-      >
-        <Toolbar>
-          <Typography variant='h6' noWrap sx={{ fontWeight: 'bold' }}>
-            My Dashboard
-          </Typography>
-        </Toolbar>
-        <Divider sx={{ backgroundColor: '#475569' }} />
-        <List>
-          {[
-            { text: 'Overview', icon: <Dashboard /> },
-            { text: 'Account', icon: <AccountCircle /> },
-            { text: 'Settings', icon: <Settings /> },
-          ].map((item, index) => (
-            <ListItem button key={index}>
-              <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItem>
-          ))}
-        </List>
-        <Box sx={{ flexGrow: 1 }} />
-        <List
-          sx={{
-            mb: 2,
-            backgroundColor: '#fff',
-            color: '#475569',
-            borderRadius: 3,
-            mx: 2,
-            '&:hover': {
-              backgroundColor: '#475569',
-              color: '#fff',
-              cursor: 'pointer',
-            },
-            '&:hover .child': { color: '#fff' },
-          }}
-        >
-          <ListItem button onClick={logout}>
-            <ListItemIcon className='child' sx={{ color: '#475569' }}>
-              <Logout />
-            </ListItemIcon>
-            <ListItemText primary='Logout' />
-          </ListItem>
-        </List>
-      </Drawer>
-    </Box>
+      {/* Mobile Toggle Trigger (Usually needs to be outside, but dashboard layout handles it. 
+          Here we might return null if the DashboardTopBar handles the toggle, 
+          but for simplicity I'll return the standard structure) */}
+    </>
   );
 }

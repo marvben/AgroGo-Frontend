@@ -1,29 +1,15 @@
-import { Typography } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const ProductDetails = ({ product }) => {
-  const productUrl = `products/${
-    product.category ? product.category + '/' : ''
-  } ${product.id}`;
+  const productUrl = `products/${product.id}`;
 
-  const inputStyles = {
-    fontSize: '16px',
-    fontWeight: 'bold',
-  };
   return (
-    <>
-      <Typography
-        component={RouterLink}
-        to={productUrl.toLocaleLowerCase()}
-        variant='h6'
-        sx={inputStyles}
-      >
-        {product.title}
-      </Typography>
-      <Typography variant='h6' sx={inputStyles}>
-        ${product.price}
-      </Typography>
-    </>
+    <div className='flex flex-col gap-1'>
+      <Link to={productUrl.toLowerCase()} className='font-bold text-foreground hover:text-primary transition-colors hover:underline text-base line-clamp-2'>
+        {product.title} {product.title}
+      </Link>
+      <span className='font-bold text-lg text-primary'>₦{Number(product.price).toLocaleString()}</span>
+    </div>
   );
 };
 

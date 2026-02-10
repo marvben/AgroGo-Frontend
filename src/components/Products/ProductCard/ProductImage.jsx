@@ -1,15 +1,5 @@
-import { CardMedia } from '@mui/material';
-
 const ProductImage = ({ src, alt }) => {
-  return (
-    <CardMedia
-      component='img'
-      height='200'
-      image={src}
-      alt={alt}
-      sx={{ objectFit: 'cover' }}
-    />
-  );
+  return <img src={src} alt={alt} className='h-48 w-full object-cover rounded-t-lg' />;
 };
 
 export default ProductImage;

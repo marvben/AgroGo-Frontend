@@ -1,189 +1,155 @@
-// src/components/AuthFormLayout.jsx
+// src/components/Forms/ProductForm.jsx
 import AddProductFormFields from './ProductFormFields';
 import { useForm } from 'react-hook-form';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Box, Paper, Typography, Button } from '@mui/material';
-import ButtonSubmit from '../AuthForm/ButtonSubmit';
-import { keyframes } from '@mui/system';
-import { useState } from 'react';
+import { Button } from '../../ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../ui/card';
+import { useState, useEffect } from 'react';
 import UploadWidget from '../../ImageUpload/UploadWidget/UploadWidget';
 import { useAuth } from '../../../context/AuthContext/useAuth';
 import { useUI } from '../../../context/UIContext/useUI';
 import ImagePreviewList from '../../ImagePreview/ImagePreviewList';
 import { deleteImageFromCloudinary } from '../../../services/imageService';
+import axios from '../../../api/axios';
+import { Loader2, Upload, CloudUpload } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export default function ProductForm({
-  mode = 'create',
-  onSubmit,
-  loading,
-  title,
-}) {
-  // Animation for the card
-  const fadeUp = keyframes`
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-`;
-
-  const inputStyles = {
-    '& .MuiInputBase-input': {
-      color: '#f8fafc',
-    },
-    '& .MuiFormLabel-root': {
-      color: '#cbd5e1',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': { borderColor: '#334155' },
-      '&:hover fieldset': { borderColor: '#3b82f6' },
-      '&.Mui-focused fieldset': { borderColor: '#3b82f6' },
-    },
-    '& .MuiInputBase-root.Mui-focused': {
-      backgroundColor: '#0f172a', // background when focused
-    },
-    // Autofill overrides
-    '& input:-webkit-autofill': {
-      WebkitBoxShadow: '0 0 0 100px #0f172a inset', // background color
-      WebkitTextFillColor: '#f8fafc', // text color
-      transition: 'background-color 5000s ease-in-out 0s',
-    },
-    '& input:-webkit-autofill:focus': {
-      WebkitBoxShadow: '0 0 0 100px #0f172a inset',
-      WebkitTextFillColor: '#f8fafc',
-    },
-
-    mb: 2,
-  };
-
+export default function ProductForm({ mode = 'create', onSubmit, loading, title, initialData }) {
   const {
     handleSubmit,
     register,
+    control,
+    reset, // Add reset
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues:
+      mode === 'edit' && initialData
+        ? {
+            title: initialData.title,
+            short_description: initialData.short_description,
+            description: initialData.description,
+            category: typeof initialData.category === 'object' ? initialData.category._id : initialData.category,
+            tag: initialData.tags?.[0] || '', // Assuming single tag for now or need adjustment
+            price: initialData.price,
+            stock: initialData.stock,
+          }
+        : {},
+  });
+
+  useEffect(() => {
+    if (mode === 'edit' && initialData) {
+      reset({
+        title: initialData.title,
+        short_description: initialData.short_description,
+        description: initialData.description,
+        category: typeof initialData.category === 'object' ? initialData.category._id : initialData.category,
+        tag: typeof initialData.tags?.[0] === 'object' ? initialData.tags[0]._id : initialData.tags?.[0],
+        price: initialData.price,
+        stock: initialData.stock,
+      });
+      if (initialData.images) {
+        setImages(initialData.images);
+        setShowImagePreview(true);
+        setShowSubmitButton(true);
+      }
+    }
+  }, [initialData, mode, reset]);
 
   const { user } = useAuth();
   const { showSuccess, showError } = useUI();
 
-  const [images, setImages] = useState(
-    user?.images || [{ secure_url: '', public_id: '' }]
-  );
-  const [uploadImageText, setUploadImageText] = useState(
-    'Upload product images'
-  );
+  const [images, setImages] = useState(user?.images || [{ secure_url: '', public_id: '' }]);
+  const [uploadImageText, setUploadImageText] = useState('Upload product images');
   const [showSubmitButton, setShowSubmitButton] = useState(false);
   const [showImagePreview, setShowImagePreview] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
 
   const handleRemove = async (public_id) => {
     await deleteImageFromCloudinary(public_id);
     setImages((prev) => prev.filter((img) => img.public_id !== public_id));
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [catRes, tagRes] = await Promise.all([axios.get('/categories'), axios.get('/tags')]);
+        if (catRes.data.success) setCategories(catRes.data.data);
+        if (tagRes.data.success) setTags(tagRes.data.data);
+      } catch (err) {
+        console.error('Failed to load form data', err);
+        showError('Could not load categories or tags');
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
-    <form onSubmit={handleSubmit((data) => onSubmit(data, images))}>
-      <Box
-        display='flex'
-        justifyContent='center'
-        alignItems='center'
-        minHeight='100%'
-        bgcolor='#0f172a'
-        px={2}
-        py={6}
-      >
-        <Paper
-          elevation={4}
-          sx={{
-            p: 4,
-            width: '100%',
-            maxWidth: 500,
-            borderRadius: 3,
-            bgcolor: '#1e293b',
-            border: '1px solid #334155',
-            color: '#f8fafc',
-            animation: `${fadeUp} 0.6s ease-out`, // card animation
-          }}
-        >
-          <Typography
-            variant='h5'
-            component='h2'
-            gutterBottom
-            sx={{ fontWeight: 600, textAlign: 'center', color: '#f1f5f9' }}
-          >
-            {title}
-          </Typography>
-          <AddProductFormFields
-            inputStyles={inputStyles}
-            register={register}
-            errors={errors}
-          />
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className='flex justify-center py-10 px-4 min-h-screen bg-background'>
+      <Card className='w-full max-w-2xl border-border bg-card shadow-lg'>
+        <CardHeader>
+          <CardTitle className='text-center text-2xl'>{title}</CardTitle>
+          <CardDescription className='text-center'>Enter the details of your produce</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit((data) => onSubmit(data, images))} className='space-y-6'>
+            <AddProductFormFields register={register} errors={errors} categories={categories} tags={tags} control={control} />
 
-          {images.length > 0 && showImagePreview && (
-            <ImagePreviewList images={images} onRemove={handleRemove} />
-          )}
-          {images.length <= 5 && (
-            <UploadWidget
-              folderName={`Products/${user?.username}_${user?.id}`}
-              multiple={true}
-              maxFiles={5}
-              resourceType='image'
-              showUploadMoreButton={true}
-              singleUploadAutoClose={false}
-              onUpload={(error, result) => {
-                if (!error && result.event === 'success') {
-                  const uploadedFile = {
-                    secure_url: result.info.secure_url,
-                    public_id: result.info.public_id,
-                  };
+            <div className='space-y-4 pt-4 border-t border-border'>
+              <h3 className='font-semibold text-sm text-foreground'>Product Images</h3>
 
-                  setImages((prev) => [
-                    ...prev,
-                    {
-                      secure_url: uploadedFile.secure_url,
-                      public_id: uploadedFile.public_id,
-                    },
-                  ]);
-                  showSuccess('Image added successfully');
-                  setUploadImageText('Upload more images');
-                  setShowSubmitButton(true);
-                  setShowImagePreview(true);
-                } else {
-                  showError('Upload failed. Please try again.');
-                }
-              }}
-            >
-              {({ open }) => (
-                <Button
-                  type='button'
-                  onClick={() => {
-                    if (user) {
-                      open();
-                    } else {
-                      showError('You must be logged in to upload images');
-                    }
-                  }}
-                  variant='contained'
-                  startIcon={<CloudUploadIcon />}
-                  sx={{
-                    backgroundColor: '#1976d2',
-                    textTransform: 'none',
-                    borderRadius: 2,
-                    px: 2.5,
-                    py: 1,
-                    fontWeight: 500,
-                    fontSize: '0.95rem',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-                    '&:hover': {
-                      backgroundColor: '#1565c0',
-                    },
-                  }}
-                >
-                  {uploadImageText}
-                </Button>
+              {images.length > 0 && showImagePreview && <ImagePreviewList images={images} onRemove={handleRemove} />}
+
+              {images.length <= 5 && (
+                <div className='flex justify-center'>
+                  <UploadWidget
+                    folderName={`Products/${user?.username}_${user?.id}`}
+                    multiple={true}
+                    maxFiles={5}
+                    resourceType='image'
+                    showUploadMoreButton={true}
+                    singleUploadAutoClose={false}
+                    onUpload={(error, result) => {
+                      if (!error && result.event === 'success') {
+                        const uploadedFile = {
+                          secure_url: result.info.secure_url,
+                          public_id: result.info.public_id,
+                        };
+
+                        setImages((prev) => [
+                          ...prev,
+                          {
+                            secure_url: uploadedFile.secure_url,
+                            public_id: uploadedFile.public_id,
+                          },
+                        ]);
+                        showSuccess('Image added successfully');
+                        setUploadImageText('Upload more images');
+                        setShowSubmitButton(true);
+                        setShowImagePreview(true);
+                      } else {
+                        showError('Upload failed. Please try again.');
+                      }
+                    }}
+                  >
+                    {({ open }) => (
+                      <Button type='button' onClick={() => (user ? open() : showError('Login required'))} variant='secondary' className='w-full border-dashed border-2 h-24 flex-col gap-2'>
+                        <CloudUpload className='h-6 w-6' />
+                        {uploadImageText}
+                      </Button>
+                    )}
+                  </UploadWidget>
+                </div>
               )}
-            </UploadWidget>
-          )}
-          {showSubmitButton && (
-            <ButtonSubmit text='Create Product' loading={loading} />
-          )}
-        </Paper>
-      </Box>
-    </form>
+            </div>
+
+            {showSubmitButton && (
+              <Button type='submit' className='w-full' disabled={loading}>
+                {loading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : 'Create Product'}
+              </Button>
+            )}
+          </form>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

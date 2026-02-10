@@ -1,89 +1,45 @@
-// src/pages/HomePage.jsx
 import { useEffect, useState } from 'react';
+import { useProduct } from '../context/ProductContext/useProduct';
+import HeroSection from '../components/Home/HeroSection';
+import CategorySection from '../components/Home/CategorySection';
+import TrustSection from '../components/Home/TrustSection';
 import ProductsList from '../components/Products/ProductsList/ProductsList';
-import API from '../api/axios';
-import { Box, Typography, Alert } from '@mui/material';
 
-export default function HomePage() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const HomePage = () => {
+  const { getManyProducts } = useProduct();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      try {
-        const res = await API.get('/api/products');
-        setProducts(res.data || []);
-        // setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
+      const data = await getManyProducts();
+      if (data) {
+        setProducts(data);
       }
     };
-
     fetchProducts();
   }, []);
 
-  // if (loading) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         minHeight: '100vh',
-  //         display: 'flex',
-  //         alignItems: 'center',
-  //         justifyContent: 'center',
-  //         bgcolor: '#0f172a',
-  //       }}
-  //     >
-  //       <CircularProgress sx={{ color: '#38bdf8' }} />
-  //     </Box>
-  //   );
-  // }
-
-  /////////////////////
-
-  if (error) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: '#0f172a',
-        }}
-      >
-        <Alert severity='error' variant='filled'>
-          {error}
-        </Alert>
-      </Box>
-    );
-  }
-
-  ////////////////////
-
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        bgcolor: '#0f172a',
-        color: 'white',
-        p: { xs: 1, sm: 2, md: 4 },
-      }}
-    >
-      {/* Hero Section */}
-      <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Typography variant='h3' fontWeight='bold' sx={{ color: '#38bdf8' }}>
-          Welcome to AgroGo
-        </Typography>
-        <Typography variant='h6' sx={{ mt: 1, color: '#cbd5e1' }}>
-          Your trusted agricultural marketplace.
-        </Typography>
-      </Box>
+    <div className='min-h-screen bg-slate-950 pb-10'>
+      {/* Hero */}
+      <HeroSection />
 
-      {/* Products Grid */}
+      {/* Categories */}
+      <CategorySection />
 
-      <ProductsList title='Latest Products' />
-    </Box>
+      {/* Featured Products */}
+      <div className='relative z-10'>
+        {products?.length > 0 ? (
+          <ProductsList products={products} title='Fresh Arrivals' description='Direct from farms harvested within the last 24 hours.' />
+        ) : (
+          <ProductsList title='Fresh Arrivals' description='Direct from farms harvested within the last 24 hours.' />
+        )}
+      </div>
+
+      {/* Trust & Guarantee */}
+      <TrustSection />
+    </div>
   );
-}
+};
+
+export default HomePage;

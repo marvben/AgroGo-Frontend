@@ -1,231 +1,63 @@
-// context/Auth/AuthProvider.js
 import { useState, useEffect } from 'react';
 import { CartContext } from './CartContext';
-import Notification from '../../utils/Notification';
-import useSnackbar from '../../hooks/useSnackbar';
-import getRemainingTime from '../../utils/getRemainingTime';
+import { toast } from 'sonner';
 
-import {
-  registerUser,
-  loginUser,
-  logoutUser,
-  deleteUser as deleteUserService,
-  forgotPassword as forgotPasswordService,
-  resetPassword as resetPasswordService,
-  checkUrlValidity as checkUrlValidityService,
-  uploadProfileImage as uploadProfileImageService,
-  getProfile,
-} from '../../services/authService';
+export const CartProvider = ({ children }) => {
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const storedCart = localStorage.getItem('agrogo_cart');
+      return storedCart ? JSON.parse(storedCart) : [];
+    } catch (error) {
+      console.error('Failed to parse cart from local storage', error);
+      return [];
+    }
+  });
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [userType, setUserType] = useState('buyer');
-  const [userUrl, setUserUrl] = useState('/dashboard');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const [requiredRole, setRequiredRole] = useState(false);
-  const [userHasRole, setUserHasRole] = useState(false);
-
-  const [showHeader, setShowHeader] = useState(true);
-  const [showFooter, setShowFooter] = useState(true);
-
-  const [hashTokenExpired, setHashTokenExpired] = useState(false);
-
-  const { snack, setSnack, showSuccess, showError } = useSnackbar();
-
-  // Load user profile on mount
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await getProfile(userType);
-        if (res.data) {
-          setUser(res.data);
-          setIsAuthenticated(true);
-        }
-      } catch {
-        setUser(null);
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
+    localStorage.setItem('agrogo_cart', JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const addToCart = (product, quantity = 1) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => (item._id || item.id) === (product._id || product.id));
+      if (existingItem) {
+        toast.info('Item quantity updated in cart');
+        return prevItems.map((item) => ((item._id || item.id) === (product._id || product.id) ? { ...item, quantity: item.quantity + quantity } : item));
       }
-    })();
-  }, [userType]);
-
-  // Auth actions
-  const login = async (data) => {
-    try {
-      const { data: result } = await loginUser(userType, data);
-      if (result?.user) {
-        setUser(result.user);
-        showSuccess('Login Successful');
-        return true;
-      }
-      return false;
-    } catch (err) {
-      showError(err?.response?.data?.message || err.message);
-      return false;
-    }
+      toast.success('Added to cart');
+      return [...prevItems, { ...product, quantity }];
+    });
   };
 
-  const register = async (data) => {
-    try {
-      const { data: result } = await registerUser(userType, data);
-      if (result?.user) {
-        setUser(result.user);
-        showSuccess(`Welcome ${result.user.name}, registration successful!`);
-        return true;
-      }
-      return false;
-    } catch (err) {
-      showError(err?.response?.data?.message || err.message);
-      return false;
-    }
+  const removeFromCart = (productId) => {
+    setCartItems((prevItems) => prevItems.filter((item) => (item._id || item.id) !== productId));
+    toast.error('Removed from cart');
   };
 
-  const logout = async () => {
-    try {
-      await logoutUser(userType);
-      setUser(null);
-      setIsAuthenticated(false);
-      showSuccess('Logged out successfully!');
-      return true;
-    } catch {
-      showError('Logout failed');
-      return false;
-    }
+  const updateQuantity = (productId, quantity) => {
+    setCartItems((prevItems) => prevItems.map((item) => ((item._id || item.id) === productId ? { ...item, quantity: Math.max(1, quantity) } : item)));
   };
 
-  const deleteUser = async () => {
-    try {
-      await deleteUserService(userType);
-      setUser(null);
-      setIsAuthenticated(false);
-      showSuccess('User deleted successfully');
-      return true;
-    } catch (err) {
-      showError('Failed to delete user: ' + err.message);
-      return false;
-    }
+  const clearCart = () => {
+    setCartItems([]);
   };
 
-  const forgotPassword = async (data) => {
-    try {
-      await forgotPasswordService(userType, data);
-      showSuccess('Reset email sent');
-      setHashTokenExpired(false);
-      return true;
-    } catch {
-      showError('Unsuccessful, try again!');
-      return false;
-    }
-  };
-
-  const resetPassword = async (data, params) => {
-    try {
-      const { data: result } = await resetPasswordService(
-        userType,
-        params,
-        data
-      );
-      if (result.success) {
-        showSuccess('Password Update Successful');
-        return true;
-      }
-      return false;
-    } catch (err) {
-      if (err?.response?.data?.expired) setHashTokenExpired(true);
-      showError('Unsuccessful, Link expired');
-      return false;
-    }
-  };
-
-  const checkUrlValidity = async (params) => {
-    try {
-      const { data } = await checkUrlValidityService(userType, params);
-      if (data.expired) {
-        showError(data.message || 'Token expired');
-        return true;
-      }
-      showSuccess(data.message || 'Link expires in 15mins');
-      return false;
-    } catch (err) {
-      if (err?.response?.data?.expired) setHashTokenExpired(true);
-      showError(err?.response?.data?.message || err.message);
-      return false;
-    }
-  };
-
-  const uploadImageToCloudinary = async (data, method) => {
-    if (!data.image?.[0]) {
-      showError('No image selected');
-      return null;
-    }
-    const formData = new FormData();
-    formData.append('profileImage', data.image[0]);
-
-    try {
-      const result = await uploadProfileImageService(
-        userType,
-        formData,
-        method
-      );
-      showSuccess('Upload successful');
-      return result.data;
-    } catch (err) {
-      showError(
-        err.response?.data?.message ||
-          err.response?.data?.error ||
-          err.message ||
-          'Something went wrong, image not uploaded'
-      );
-      return null;
-    }
-  };
-
-  const resetExpireTime = () => {
-    if (user?.verificationCodeExpires) {
-      const { minutes, seconds } = getRemainingTime(
-        user.verificationCodeExpires
-      );
-      showSuccess(`Time remaining: ${minutes}m ${seconds}s`);
-    }
-  };
+  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
   return (
     <CartContext.Provider
       value={{
-        user,
-        login,
-        register,
-        logout,
-        deleteUser,
-        forgotPassword,
-        resetPassword,
-        checkUrlValidity,
-        uploadImageToCloudinary,
-        resetExpireTime,
-        userType,
-        setUserType,
-        userUrl,
-        setUserUrl,
-        isAuthenticated,
-        setIsAuthenticated,
-        requiredRole,
-        setRequiredRole,
-        userHasRole,
-        setUserHasRole,
-        showHeader,
-        setShowHeader,
-        showFooter,
-        setShowFooter,
-        hashTokenExpired,
-        setHashTokenExpired,
-        loading,
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        cartTotal,
+        cartCount,
       }}
     >
       {children}
-      <Notification snack={snack} setSnack={setSnack} />
     </CartContext.Provider>
   );
 };

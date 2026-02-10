@@ -1,28 +1,20 @@
-import { IconButton, Box, Typography } from '@mui/material';
-import { Add, Remove } from '@mui/icons-material';
+import { Button } from '@/components/ui/button';
+import { Plus, Minus } from 'lucide-react';
 import { useState } from 'react';
 
 const QuantitySelector = () => {
   const [qty, setQty] = useState(1);
 
   return (
-    <Box display='flex' alignItems='center'>
-      <IconButton
-        onClick={() => setQty(Math.max(1, qty - 1))}
-        color='primary'
-        sx={{ p: 0.5 }}
-      >
-        <Remove sx={{ fontSize: 18 }} />
-      </IconButton>
-      <Typography mx={1}>{qty}</Typography>
-      <IconButton
-        onClick={() => setQty(qty + 1)}
-        color='primary'
-        sx={{ p: 0.2 }}
-      >
-        <Add sx={{ fontSize: 18 }} />
-      </IconButton>
-    </Box>
+    <div className='flex items-center gap-2'>
+      <Button variant='outline' size='icon' className='h-8 w-8' onClick={() => setQty(Math.max(1, qty - 1))}>
+        <Minus className='h-4 w-4' />
+      </Button>
+      <span className='w-8 text-center font-medium'>{qty}</span>
+      <Button variant='outline' size='icon' className='h-8 w-8' onClick={() => setQty(qty + 1)}>
+        <Plus className='h-4 w-4' />
+      </Button>
+    </div>
   );
 };
 

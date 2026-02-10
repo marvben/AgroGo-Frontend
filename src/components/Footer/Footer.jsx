@@ -1,102 +1,108 @@
-import React from 'react';
-import { Box, Container, Grid, Typography, IconButton } from '@mui/material';
-import { Facebook, Twitter, Instagram, LinkedIn } from '@mui/icons-material';
-import { useAuth } from '../../context/AuthContext/useAuth';
+import { Link } from 'react-router-dom';
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
-const Footer = () => {
-  const { showFooter } = useAuth(); // { id, username, role } or null
-
-  if (!showFooter) return '';
-
+export default function Footer() {
   return (
-    <Box
-      component='footer'
-      sx={{
-        backgroundColor: '#1E293B',
-        color: 'white',
-        py: 4,
-        mt: 'auto',
-      }}
-    >
-      <Container maxWidth='lg'>
-        <Grid container spacing={4} justifyContent='space-between'>
-          {/* Brand Section */}
-          <Grid>
-            <Typography variant='h6' sx={{ fontWeight: 'bold', mb: 1 }}>
-              🌱 AgroGo
-            </Typography>
-            <Typography variant='body2'>
-              Connecting Farmers and Buyers with trust and efficiency.
-            </Typography>
-          </Grid>
+    <footer className='bg-muted/30 border-t border-border mt-auto'>
+      <div className='container py-12 px-4 md:px-6'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+          {/* Brand Column */}
+          <div className='space-y-4'>
+            <Link to='/' className='flex items-center gap-2 font-bold text-xl tracking-tight'>
+              <span className='text-primary text-2xl'>Agro</span>
+              <span className='text-foreground'>Go</span>
+            </Link>
+            <p className='text-muted-foreground text-sm leading-relaxed'>Empowering farmers and connecting buyers directly. The most trusted marketplace for fresh, quality produce.</p>
+            <div className='flex gap-4'>
+              <a href='#' className='text-muted-foreground hover:text-primary transition-colors'>
+                <Facebook className='h-5 w-5' />
+              </a>
+              <a href='#' className='text-muted-foreground hover:text-primary transition-colors'>
+                <Twitter className='h-5 w-5' />
+              </a>
+              <a href='#' className='text-muted-foreground hover:text-primary transition-colors'>
+                <Instagram className='h-5 w-5' />
+              </a>
+              <a href='#' className='text-muted-foreground hover:text-primary transition-colors'>
+                <Linkedin className='h-5 w-5' />
+              </a>
+            </div>
+          </div>
 
           {/* Quick Links */}
-          <Grid>
-            <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mb: 1 }}>
-              Quick Links
-            </Typography>
-            {['Home', 'About', 'Marketplace', 'Contact'].map((link) => (
-              <Typography
-                key={link}
-                variant='body2'
-                sx={{
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  mt: 1,
-                  '&:hover': {
-                    color: '#38BDF8',
-                    transform: 'translateX(5px)',
-                  },
-                }}
-              >
-                {link}
-              </Typography>
-            ))}
-          </Grid>
+          <div className='space-y-4'>
+            <h3 className='font-semibold text-lg'>Quick Links</h3>
+            <ul className='space-y-2 text-sm text-muted-foreground'>
+              <li>
+                <Link to='/about' className='hover:text-primary transition-colors'>
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to='/products' className='hover:text-primary transition-colors'>
+                  Marketplace
+                </Link>
+              </li>
+              <li>
+                <Link to='/contact' className='hover:text-primary transition-colors'>
+                  Contact Support
+                </Link>
+              </li>
+              <li>
+                <Link to='/terms' className='hover:text-primary transition-colors'>
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link to='/privacy' className='hover:text-primary transition-colors'>
+                  Privacy Policy
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-          {/* Social Media */}
-          <Grid>
-            <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mb: 1 }}>
-              Follow Us
-            </Typography>
-            <Box>
-              {[Facebook, Twitter, Instagram, LinkedIn].map((Icon, i) => (
-                <IconButton
-                  key={i}
-                  sx={{
-                    color: 'white',
-                    transition: 'all 0.3s ease',
-                    mx: 0.5,
-                    '&:hover': {
-                      color: '#38BDF8',
-                      backgroundColor: '#0F172A',
-                      transform: 'scale(1.2)',
-                    },
-                  }}
-                >
-                  <Icon />
-                </IconButton>
-              ))}
-            </Box>
-          </Grid>
-        </Grid>
+          {/* Contact Info */}
+          <div className='space-y-4'>
+            <h3 className='font-semibold text-lg'>Contact Us</h3>
+            <ul className='space-y-3 text-sm text-muted-foreground'>
+              <li className='flex items-start gap-3'>
+                <MapPin className='h-5 w-5 text-primary shrink-0' />
+                <span>
+                  123 AgriLane, Farming District,
+                  <br />
+                  Nairobi, Kenya
+                </span>
+              </li>
+              <li className='flex items-center gap-3'>
+                <Phone className='h-5 w-5 text-primary shrink-0' />
+                <span>+254 700 123 456</span>
+              </li>
+              <li className='flex items-center gap-3'>
+                <Mail className='h-5 w-5 text-primary shrink-0' />
+                <span>support@agrogo.com</span>
+              </li>
+            </ul>
+          </div>
 
-        {/* Copyright */}
-        <Box
-          sx={{
-            textAlign: 'center',
-            mt: 4,
-            borderTop: '1px solid #334155',
-            pt: 2,
-          }}
-        >
-          <Typography variant='body2'>
-            © {new Date().getFullYear()} 🌱 AgroGo. All rights reserved.
-          </Typography>
-        </Box>
-      </Container>
-    </Box>
+          {/* Newsletter */}
+          <div className='space-y-4'>
+            <h3 className='font-semibold text-lg'>Newsletter</h3>
+            <p className='text-muted-foreground text-sm'>Subscribe to get the latest market prices and updates.</p>
+            <form className='flex flex-col gap-2' onSubmit={(e) => e.preventDefault()}>
+              <Input placeholder='Enter your email' type='email' className='bg-background' />
+              <Button type='submit' className='w-full'>
+                Subscribe <ArrowRight className='ml-2 h-4 w-4' />
+              </Button>
+            </form>
+          </div>
+        </div>
+
+        <div className='border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground'>
+          <p>&copy; {new Date().getFullYear()} AgroGo Marketplace. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
   );
-};
-
-export default Footer;
+}

@@ -1,20 +1,11 @@
-import { Box } from '@mui/material';
-import ProductsList from '../components/Products/ProductsList/ProductsList';
+import ProductsList from '@/components/Products/ProductsList/ProductsList';
 
-const ProductPage = () => (
-  <Box
-    sx={{
-      minHeight: '100vh',
-      bgcolor: '#0f172a',
-      color: 'white',
-      p: { xs: 1, sm: 2, md: 4 },
-    }}
-  >
-    <ProductsList
-      title='Our Products'
-      description='List of our all our products'
-    />
-  </Box>
-);
+const ProductPage = () => {
+  return (
+    <div className='min-h-screen bg-background py-8 px-4 md:px-8'>
+      <ProductsList title='Our Products' description='Fresh farm produce directly from farmers' />
+    </div>
+  );
+};
 
 export default ProductPage;
